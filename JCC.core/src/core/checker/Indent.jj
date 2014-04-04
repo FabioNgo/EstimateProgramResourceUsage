@@ -49,7 +49,7 @@ import java.util.Vector;
 public class IndentChecker implements IChecker
 {
    int l = 0; // l is level of braces
-     boolean inSwitch = false;
+     //boolean inSwitch = false;
          char separator = 1;
          boolean inDo = false;
          boolean inTry = false;
@@ -61,7 +61,7 @@ public class IndentChecker implements IChecker
          String shouldNewLine ="";
          boolean inLongLine = true;
          boolean inWrapLine = false;
-         Stack wrapLvl;
+         //Stack wrapLvl;
          boolean BOF = false;
    static public final class ModifierSet
    {
@@ -157,7 +157,7 @@ public class IndentChecker implements IChecker
 
    public void resetVariables()   {	warnings.clear();
 	int l = 0; // l is level of braces
-    inSwitch = false;
+    //inSwitch = false;
     separator = 1;
     inDo = false;
 	inTry = false;
@@ -169,7 +169,7 @@ public class IndentChecker implements IChecker
         shouldNewLine ="";
         inLongLine = true;
         inWrapLine = false;
-        wrapLvl = new Stack();;
+        //wrapLvl = new Stack();;
         BOF = false;
   }
 
@@ -211,17 +211,7 @@ public class IndentChecker implements IChecker
 }
 
 PARSER_END(IndentChecker)
-void insert(String addition) :
-{}
-{
-    
-    {wrapLvl.insert(getToken(0).image,getToken(0).endColumn, getToken(0).beginLine,addition.length());}
-}
-void  remove() :
-{}
-{
-    {wrapLvl.remove();}
-}
+
 void SpaChk(String correctSpaces) :
 {
 	Token t,t1,t2;
@@ -357,11 +347,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
 	            correctIndent +="    ";
             }
         }else{
-            //Out("asdas");
-            Stack temp = wrapLvl.get();
-            for(int i=0;i<temp.endCol+temp.addition;i++){
-                correctIndent+=" ";
-            }
+//            //Out("asdas");//            Stack temp = wrapLvl.get();//            for(int i=0;i<temp.endCol+temp.addition;i++){//                correctIndent+=" ";//            }
         }
 	    //if(!inWrapLine){
 	        String startSpaces = "";
@@ -372,26 +358,11 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
             if(!startSpaces.equals(correctIndent)&&chkIndent){
 	            Out("Warning: line "+ currentLine +": Wrong indentation.");
 	            if(!inWrapLine) Out(" The correct one is "
-	                                    +correctIndent.length()
-	                                    +" spaces.\n"
+	                                    +(correctIndent.length()/4)
+	                                    +" tab(s).\n"
                                    );
 	            else {
-	                  if(wrapLvl.get().addition==0){
-	                    Out(" The correct one is below and right after '"
-	                            +wrapLvl.get().image
-                                +"' at line "
-                                +(wrapLvl.get().line)+"\n"
-                            );
-	                }else{
-	                    Out(" The correct one is below '"
-	                            +wrapLvl.get().image
-                                +"' at line "
-                                +(wrapLvl.get().line)
-                                +" and more "
-                                +wrapLvl.get().addition
-                                + " spaces\n"
-                            );
-	                }
+//	                  if(wrapLvl.get().addition==0){//	                    Out(" The correct one is below and right after '"//	                            +wrapLvl.get().image//                                +"' at line "//                                +(wrapLvl.get().line)+"\n"//                            );//	                }else{//	                    Out(" The correct one is below '"//	                            +wrapLvl.get().image//                                +"' at line "//                                +(wrapLvl.get().line)//                                +" and more "//                                +wrapLvl.get().addition//                                + " spaces\n"//                            );//	                }
 	                
 	            }
 	            
@@ -1707,7 +1678,7 @@ void VariableInitializer():
 void ArrayInitializer():
 {}
 {
-  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+  "{" [ VariableInitializer() SpaChk("") ( LOOKAHEAD(5)"," SpaChk(" ") VariableInitializer() )* ] [ SpaChk("") "," ] "}"
 }
 
 void MethodDeclaration(int modifiers):
@@ -2374,9 +2345,9 @@ Out("")
 void SwitchStatement():
 {}
 {
-    {inSwitch = true;}
-  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ") {l+=2;} "{"  OutNewLine("{")
-   (SwitchLabel() ( BlockStatement() )* )* "}"  OutNewLine("}") 
+    //{inSwitch = true;}
+  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ") {l++;} "{"  OutNewLine("{")
+   (SwitchLabel() {l++;} ( BlockStatement() )* {l--;} )* "}"  OutNewLine("}") 
 }
 
 void SwitchLabel():
@@ -2674,10 +2645,7 @@ void FirstLine(String s) :
     //Out("Asd")
     LOOKAHEAD((<SPACES>)* "}")
   	 {
-  	 if(inSwitch) {
-  	    l--;
-  	    inSwitch = false;
-  	 }
+  	 
   	 l--; 
   	 SpaChk(indent); 
   	 }
