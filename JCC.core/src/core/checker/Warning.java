@@ -1,9 +1,9 @@
 package core.checker;
 
 public abstract class Warning {
-	final public int TYPE_NAMING = 1;
-	final public int TYPE_INDENT = 2;
-	final public int TYPE_COMMENT = 3;
+	static final public int TYPE_NAMING = 1;
+	static final public int TYPE_INDENT = 2;
+	static final public int TYPE_COMMENT = 3;
 
 	Position pos;
 	String args[];

@@ -48,21 +48,20 @@ import java.util.Vector;
  */
 public class IndentChecker implements IChecker
 {
-   int l = 0; // l is level of braces
-     //boolean inSwitch = false;
-        Vector<Warning > warnings;
-         char separator = 1;
-         boolean inDo = false;
-         boolean inTry = false;
-         Token otherToken = null;
-         Token firstSpaces = null;
-         Token lastSpaces = null;
-         char newlineTok = 2;
-         boolean endOfLine = false;
-         String shouldNewLine ="";
-         boolean inLongLine = true;
-         boolean inWrapLine = false;
-         boolean inCode = false;
+   int l = 0;
+    Vector<Warning > warnings;
+     char separator = 1;
+     boolean inDo = false;
+     boolean inTry = false;
+     Token otherToken = null;
+     Token firstSpaces = null;
+     Token lastSpaces = null;
+     char newlineTok = 2;
+     boolean endOfLine = false;
+     String shouldNewLine ="";
+     boolean inLongLine = true;
+     boolean inWrapLine = false;
+     boolean inCode = false;
    static public final class ModifierSet
    {
      /* Definitions of the bits in the modifiers field.  */
@@ -162,14 +161,14 @@ public class IndentChecker implements IChecker
     inDo = false;
 	inTry = false;
 	otherToken = null;
-        firstSpaces = null;
-        lastSpaces = null;
-        newlineTok = 2;
-        endOfLine = false;
-        shouldNewLine ="";
-        inLongLine = true;
-        inWrapLine = false;
-        inCode = false;
+    firstSpaces = null;
+    lastSpaces = null;
+    newlineTok = 2;
+    endOfLine = false;
+    shouldNewLine ="";
+    inLongLine = true;
+    inWrapLine = false;
+    inCode = false;
   }
 
   public Vector<Warning> getWarnings()
