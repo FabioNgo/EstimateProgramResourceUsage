@@ -33,6 +33,8 @@ options {
   TOKEN_FACTORY = "MyIndentToken";
   JDK_VERSION = "1.5";
   ERROR_REPORTING = false;
+  //DEBUG_LOOKAHEAD = true;
+  //DEBUG_TOKEN_MANAGER = true;
 }
 
 PARSER_BEGIN(IndentChecker)
@@ -217,6 +219,7 @@ void SpaChk(String correctSpaces) :
 	String comparedString ="";
 	String LongStm="";
 	int noOfComment = 0;
+	firstSpaces = null;
 }
 {
     (
@@ -224,9 +227,6 @@ void SpaChk(String correctSpaces) :
         (
             LOOKAHEAD(<SPACES>)
             {
-              //Out("SPACES");
-                //Out(getToken(0).kind+"");
-                //if(getToken(0).kind==0) BOF = true;
                 if(getToken(0).kind !=SPACES){
                     
                     otherToken = getToken(0);
@@ -302,16 +302,18 @@ void SpaChk(String correctSpaces) :
         
         if(firstSpaces != null)
         {
-          
+            //Out(firstSpaces+ String.valueOf(firstSpaces.beginLine) +"|");
 	        comparedSpaceProcess(comparedString, correctSpaces,
 	                            firstSpaces.beginLine, firstSpaces.beginColumn
 	                            );
         }else
         {
+          
           if(correctSpaces.equals("")){
-	            //Out("aaa");
+	            
 	        }else{
-	            comparedSpaceProcess("", correctSpaces,0,0);
+	           //Out("asd");
+	            comparedSpaceProcess("", correctSpaces,getToken(1).beginLine,getToken(1).beginColumn);
 	        }
         }
       }
@@ -1416,9 +1418,9 @@ void CompilationUnit():
 {}
 {
   SpaChk("")
-  [LOOKAHEAD(4) PackageDeclaration() ]
-  ( ImportDeclaration() )*
-  ( TypeDeclaration() )+
+  [LOOKAHEAD(4) PackageDeclaration()]
+  ImportDeclaration()
+  (TypeDeclaration() )+
   ( < "\u001a" > )?
   ( <STUFF_TO_IGNORE: ~[]> )?
   <EOF>
@@ -1427,13 +1429,23 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
-  {inCode = true;}  Modifiers() "package" SpaChk(" ") (Name())* SpaChk("\n") ";" OutNewLine(";")
+  {inCode = true;}  Modifiers() "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
 }
 
 void ImportDeclaration():
 {}
 {
-  {inCode = true;} "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";" OutNewLine(";")
+  {inCode = true;}
+  (
+
+    "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
+    (            LOOKAHEAD((< SPACES >)* "import")
+        ( OutNewLine(";"))
+        |
+        (OutNewLine("\n"))
+    )
+      )*
+  
 }
 
 /*
@@ -1596,7 +1608,12 @@ void ClassOrInterfaceBody(boolean isInterface):
 {
   "{" {l++;} OutNewLine("{")
    ( ClassOrInterfaceBodyDeclaration(isInterface) )*
-   "}" OutNewLine("}")
+   "}"
+   (     LOOKAHEAD((< SPACES >)* < EOF >)
+        (OutNewLine("}"))
+        |
+        ( OutNewLine("\n"))
+    )
 }
 
 void ClassOrInterfaceBodyDeclaration(boolean isInterface):
@@ -2646,12 +2663,16 @@ void OutWhiteLine():
 }
 
 void FirstLine(String s) :
-{String indent ="\n"; }
+{
+    String indent ="\n";
+  
+   }
 {
     //Out("Asd")
+    
     LOOKAHEAD((<SPACES>)* "}")
   	 {
-  	 
+//  	 if(s.compareTo("{") == 0)//	  {//	    indent = "";//	  } 
   	 l--; 
   	 SpaChk(indent); 
   	 }
@@ -2664,9 +2685,10 @@ void FirstLine(String s) :
         l++;
     }
 |
- 	{ 
+ 	{
+ 	  
 		for (int i = 0; i < l; i++) indent= indent.concat("    ");
-			if(s.equals("    ")) indent= indent.concat("    ");
+			if(s.equals("\n")) indent= indent.concat("\n");
 	}  SpaChk(indent) 
 
 }
