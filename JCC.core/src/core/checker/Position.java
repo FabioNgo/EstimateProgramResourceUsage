@@ -1,6 +1,6 @@
 package core.checker;
 
-class Position {
+public class Position {
 	public int beginLine, beginColumn, endLine, endColumn; 
 
 	public void set(Position p) {
