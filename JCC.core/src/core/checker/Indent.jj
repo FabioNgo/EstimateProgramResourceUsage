@@ -50,6 +50,7 @@ public class IndentChecker implements IChecker
 {
    int l = 0; // l is level of braces
      //boolean inSwitch = false;
+        Vector<Warning > warnings;
          char separator = 1;
          boolean inDo = false;
          boolean inTry = false;
@@ -61,8 +62,7 @@ public class IndentChecker implements IChecker
          String shouldNewLine ="";
          boolean inLongLine = true;
          boolean inWrapLine = false;
-         //Stack wrapLvl;
-         boolean BOF = false;
+         boolean inCode = false;
    static public final class ModifierSet
    {
      /* Definitions of the bits in the modifiers field.  */
@@ -153,9 +153,9 @@ public class IndentChecker implements IChecker
       catch(Exception e) { e.printStackTrace(); }
    }
 
-   Vector<Warning > warnings = new Vector<Warning >();
+   
 
-   public void resetVariables()   {	warnings.clear();
+   public void resetVariables()   {	warnings = new Vector<Warning >();
 	int l = 0; // l is level of braces
     //inSwitch = false;
     separator = 1;
@@ -169,8 +169,7 @@ public class IndentChecker implements IChecker
         shouldNewLine ="";
         inLongLine = true;
         inWrapLine = false;
-        //wrapLvl = new Stack();;
-        BOF = false;
+        inCode = false;
   }
 
   public Vector<Warning> getWarnings()
@@ -179,7 +178,6 @@ public class IndentChecker implements IChecker
    	}
 
   public static void main(String args[]) {
-    
     IndentChecker parser;
     if (args.length == 0) {
       System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
@@ -397,16 +395,19 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
 	    if(subline==0){
 	        for(int i=0;i<sb.length();i++){
 	            if(sb.charAt(i)==separator){
-	                if(i!=1){    
-	                    Out("Warning: line "
-	                        + currentLine 
-	                        +": Should have one space before comment.\n"
-	                        );
-	                    for(int j=0;i<sb.length();){
-	                        if(sb.charAt(j)==' ') sb.deleteCharAt(j);
-	                        else break;
-	                    }
-	                }
+	              if(inCode) {
+	                if(i!=1){    	                    Out("Warning: line "	                        + currentLine 	                        +": Should have one space before comment.\n"	                        );	                    for(int j=0;i<sb.length();){	                        if(sb.charAt(j)==' ') sb.deleteCharAt(j);	                        else break;	                    }	                }
+	              }else	              {
+	                if(i!=0){    
+                        Out("Warning: line "
+                            + currentLine 
+                            +": Should have no space before comment.\n"
+                            );
+                        for(int j=0;i<sb.length();){
+                            if(sb.charAt(j)==' ') sb.deleteCharAt(j);
+                            else break;
+                        }
+                    }	              }
 	            }
 	        }
 	    }
@@ -447,8 +448,11 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
 	            l--;
 	            lvlUp=false;
 	        }*/
-            if(i==0||i==comparedSpaces.length-1) {
-                FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);            }
+            if(comparedSpaces[i].contains(String.valueOf(separator))) {
+                FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);            } else {
+                if(i==0||i==comparedSpaces.length-1) {
+                    FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);                }
+            }
 			
 			sublines++;
 		}
@@ -460,11 +464,11 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
 		            lnNotConsidered ++;
 		        }
 		    }
-		    if(BOF) lnNotConsidered ++;
+		    if(!inCode) lnNotConsidered ++;
 		    //if(comparedSpaces)
             if(comparedSpaces.length-lnNotConsidered<correctSpaces.length){
                
-			    Out("Warning: line "+ beginLine +": Should break into lines.\n");
+			    Out("Warning: line "+ beginLine +": Should go to a new line.\n");
 		    }
 		    if(inWrapLine) lnNotConsidered++;
 		    if(comparedSpaces.length-lnNotConsidered>correctSpaces.length){		        
@@ -1412,7 +1416,7 @@ void CompilationUnit():
 {}
 {
   SpaChk("")
-  [LOOKAHEAD(3) PackageDeclaration() ]
+  [LOOKAHEAD(4) PackageDeclaration() ]
   ( ImportDeclaration() )*
   ( TypeDeclaration() )+
   ( < "\u001a" > )?
@@ -1423,13 +1427,13 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
-  Modifiers() "package" SpaChk(" ") (Name())* SpaChk("") ";" OutNewLine(";")
+  {inCode = true;}  Modifiers() "package" SpaChk(" ") (Name())* SpaChk("\n") ";" OutNewLine(";")
 }
 
 void ImportDeclaration():
 {}
 {
-  "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";" OutNewLine(";")
+  {inCode = true;} "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";" OutNewLine(";")
 }
 
 /*
@@ -1482,7 +1486,7 @@ int Modifiers():
  */
 void TypeDeclaration():
 {
-   int modifiers;
+   {inCode = true;} int modifiers;
 }
 {
   ";"

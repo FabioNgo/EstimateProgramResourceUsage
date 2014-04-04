@@ -11,6 +11,7 @@ import java.util.Vector;
 public class IndentChecker implements IChecker, IndentCheckerConstants {
    int l = 0; // l is level of braces
      //boolean inSwitch = false;
+        Vector<Warning > warnings;
          char separator = 1;
          boolean inDo = false;
          boolean inTry = false;
@@ -22,8 +23,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
          String shouldNewLine ="";
          boolean inLongLine = true;
          boolean inWrapLine = false;
-         //Stack wrapLvl;
-         boolean BOF = false;
+         boolean inCode = false;
    static public final class ModifierSet
    {
      /* Definitions of the bits in the modifiers field.  */
@@ -114,11 +114,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       catch(Exception e) { e.printStackTrace(); }
    }
 
-   Vector<Warning > warnings = new Vector<Warning >();
+
 
    public void resetVariables()
    {
-        warnings.clear();
+        warnings = new Vector<Warning >();
         int l = 0; // l is level of braces
     //inSwitch = false;
     separator = 1;
@@ -132,8 +132,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
         shouldNewLine ="";
         inLongLine = true;
         inWrapLine = false;
-        //wrapLvl = new Stack();;
-        BOF = false;
+        inCode = false;
   }
 
   public Vector<Warning> getWarnings()
@@ -142,7 +141,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
         }
 
   public static void main(String args[]) {
-
     IndentChecker parser;
     if (args.length == 0) {
       System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
@@ -356,6 +354,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
             if(subline==0){
                 for(int i=0;i<sb.length();i++){
                     if(sb.charAt(i)==separator){
+                      if(inCode) {
                         if(i!=1){
                             Out("Warning: line "
                                 + currentLine
@@ -366,6 +365,19 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                                 else break;
                             }
                         }
+                      }else
+                      {
+                        if(i!=0){
+                        Out("Warning: line "
+                            + currentLine
+                            +": Should have no space before comment.\u005cn"
+                            );
+                        for(int j=0;i<sb.length();){
+                            if(sb.charAt(j)==' ') sb.deleteCharAt(j);
+                            else break;
+                        }
+                    }
+                      }
                     }
                 }
             }
@@ -403,8 +415,12 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 	            l--;
 	            lvlUp=false;
 	        }*/
-            if(i==0||i==comparedSpaces.length-1) {
+            if(comparedSpaces[i].contains(String.valueOf(separator))) {
                 FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+            } else {
+                if(i==0||i==comparedSpaces.length-1) {
+                    FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+                }
             }
 
                         sublines++;
@@ -417,11 +433,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                             lnNotConsidered ++;
                         }
                     }
-                    if(BOF) lnNotConsidered ++;
+                    if(!inCode) lnNotConsidered ++;
                     //if(comparedSpaces)
             if(comparedSpaces.length-lnNotConsidered<correctSpaces.length){
 
-                            Out("Warning: line "+ beginLine +": Should break into lines.\u005cn");
+                            Out("Warning: line "+ beginLine +": Should go to a new line.\u005cn");
                     }
                     if(inWrapLine) lnNotConsidered++;
                     if(comparedSpaces.length-lnNotConsidered>correctSpaces.length){
@@ -466,7 +482,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
  */
   final public void CompilationUnit() throws ParseException {
     SpaChk("");
-    if (jj_2_2(3)) {
+    if (jj_2_2(4)) {
       PackageDeclaration();
     } else {
       ;
@@ -526,6 +542,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   }
 
   final public void PackageDeclaration() throws ParseException {
+   inCode = true;
     Modifiers();
     jj_consume_token(PACKAGE);
     SpaChk(" ");
@@ -540,12 +557,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       }
       Name();
     }
-    SpaChk("");
+    SpaChk("\u005cn");
     jj_consume_token(SEMICOLON);
     OutNewLine(";");
   }
 
   final public void ImportDeclaration() throws ParseException {
+   inCode = true;
     jj_consume_token(IMPORT);
     SpaChk(" ");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -664,7 +682,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
  * Declaration syntax follows.
  */
   final public void TypeDeclaration() throws ParseException {
-   int modifiers;
+   {inCode = true;} int modifiers;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SEMICOLON:
       jj_consume_token(SEMICOLON);
@@ -4643,76 +4661,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  private boolean jj_3R_96() {
-    if (jj_3R_134()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_215() {
-    if (jj_3R_234()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_195() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(16)) {
-    jj_scanpos = xsp;
-    if (jj_3R_217()) return true;
-    }
-    if (jj_3R_81()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_3R_81()) return true;
-    xsp = jj_scanpos;
-    if (jj_3R_313()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_314()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_315()) jj_scanpos = xsp;
-    if (jj_3R_298()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_214() {
-    if (jj_3R_233()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_213() {
-    if (jj_3R_232()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_212() {
-    if (jj_3R_231()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_211() {
-    if (jj_3R_230()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_210() {
-    if (jj_3R_229()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_209() {
-    if (jj_3R_228()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_294() {
-    if (jj_3R_132()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_208() {
-    if (jj_3R_227()) return true;
-    return false;
-  }
-
   private boolean jj_3R_207() {
     if (jj_3R_226()) return true;
     return false;
@@ -6960,11 +6908,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(SPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_79() {
     Token xsp;
     xsp = jj_scanpos;
@@ -6980,11 +6923,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_113() {
     if (jj_3R_132()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_109() {
-    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7046,18 +6984,14 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_379() {
-    if (jj_scan_token(FINALLY)) return true;
-    if (jj_3R_107()) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
-  private boolean jj_3R_81() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_109()) { jj_scanpos = xsp; break; }
-    }
+  private boolean jj_3R_379() {
+    if (jj_scan_token(FINALLY)) return true;
+    if (jj_3R_107()) return true;
     return false;
   }
 
@@ -7114,6 +7048,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   private boolean jj_3R_318() {
     if (jj_3R_105()) return true;
     if (jj_3R_81()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_109() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7179,6 +7118,15 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_81()) return true;
     if (jj_3R_82()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_81() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -8434,6 +8382,76 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_216() {
     if (jj_3R_235()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_96() {
+    if (jj_3R_134()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_215() {
+    if (jj_3R_234()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_195() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(16)) {
+    jj_scanpos = xsp;
+    if (jj_3R_217()) return true;
+    }
+    if (jj_3R_81()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_3R_81()) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_313()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_314()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_315()) jj_scanpos = xsp;
+    if (jj_3R_298()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_214() {
+    if (jj_3R_233()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_213() {
+    if (jj_3R_232()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_212() {
+    if (jj_3R_231()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_211() {
+    if (jj_3R_230()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_210() {
+    if (jj_3R_229()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_209() {
+    if (jj_3R_228()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_294() {
+    if (jj_3R_132()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_208() {
+    if (jj_3R_227()) return true;
     return false;
   }
 
