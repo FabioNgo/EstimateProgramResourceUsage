@@ -37,14 +37,8 @@ public class JCCHandler {
 			System.out.print("\tWhat do you want?");
 			type = in.nextInt();
 
-			InputStream inputStream = null;
-			try {
-				inputStream = new FileInputStream(
-						"C:/Users/wind/workspace/std/Java Convention Plugin/src/core/CommentChecker.java");
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			InputStream inputStream = JCCHandler.class.getResourceAsStream("input.txt");
+			
 			JCCHandler jccHandler = new JCCHandler(inputStream);
 			warnings = jccHandler.check(inputStream, type);
 			for (int i = 0; i < warnings.size(); i++) {
