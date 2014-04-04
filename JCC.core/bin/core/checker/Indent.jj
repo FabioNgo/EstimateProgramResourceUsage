@@ -447,7 +447,9 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
 	            l--;
 	            lvlUp=false;
 	        }*/
-			FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+            if(i==0||i==comparedSpaces.length-1) {
+                FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);            }
+			
 			sublines++;
 		}
 		//new line checking

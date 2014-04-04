@@ -403,7 +403,10 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 	            l--;
 	            lvlUp=false;
 	        }*/
-                        FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+            if(i==0||i==comparedSpaces.length-1) {
+                FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+            }
+
                         sublines++;
                 }
                 //new line checking
@@ -4640,11 +4643,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  private boolean jj_3R_216() {
-    if (jj_3R_235()) return true;
-    return false;
-  }
-
   private boolean jj_3R_96() {
     if (jj_3R_134()) return true;
     return false;
@@ -6957,13 +6955,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(SPACES)) return true;
+  private boolean jj_3R_319() {
+    if (jj_3R_336()) return true;
     return false;
   }
 
-  private boolean jj_3R_319() {
-    if (jj_3R_336()) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -6980,13 +6978,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_109() {
-    if (jj_scan_token(SPACES)) return true;
+  private boolean jj_3R_113() {
+    if (jj_3R_132()) return true;
     return false;
   }
 
-  private boolean jj_3R_113() {
-    if (jj_3R_132()) return true;
+  private boolean jj_3R_109() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7048,18 +7046,18 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_379() {
+    if (jj_scan_token(FINALLY)) return true;
+    if (jj_3R_107()) return true;
+    return false;
+  }
+
   private boolean jj_3R_81() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_109()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_379() {
-    if (jj_scan_token(FINALLY)) return true;
-    if (jj_3R_107()) return true;
     return false;
   }
 
@@ -8431,6 +8429,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_313() {
     if (jj_3R_105()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_216() {
+    if (jj_3R_235()) return true;
     return false;
   }
 
