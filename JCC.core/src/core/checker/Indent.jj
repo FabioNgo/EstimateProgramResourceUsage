@@ -1327,6 +1327,11 @@ TOKEN :
 }
 
 /* SEPARATORS */
+TOKEN :
+{
+  < TOKEN_IDENTIFIER: <CLASS >  >
+
+}
 
 TOKEN :
 {
@@ -1802,8 +1807,8 @@ void ClassOrInterfaceType():
 {
   <IDENTIFIER>
   [ LOOKAHEAD((< SPACES >)* "<" (< SPACES >)* TypeArgument()) SpaChk("") TypeArguments() ]
-  ( LOOKAHEAD((< SPACES >)* "." )
-         "." SpaChk("") <IDENTIFIER>
+  ( LOOKAHEAD((< SPACES >)* "." (< IDENTIFIER >) )
+         "." SpaChk("") (< IDENTIFIER >)
          [ LOOKAHEAD((< SPACES >)* "<" (< SPACES >)* TypeArgument()) SpaChk("") TypeArguments() SpaChk(" ") ]
    )*
   
@@ -2152,8 +2157,8 @@ void PrimaryPrefix():
 |
   AllocationExpression()
 |
-  LOOKAHEAD( ResultType() "." "class" )
-  ResultType() "." "class"
+  LOOKAHEAD( ResultType() (< SPACES >)* "." (< SPACES >)* "class" )
+  ResultType() SpaChk("") "." SpaChk("") "class" 
 |
   (Name())+
 }

@@ -1,11 +1,5 @@
-package a;
-
-import a;
-import b;
-
-public class A {
-    int a;
-}
-
-class B {
+public class JCCHandler {
+    void main() {
+        InputStream inputStream = JCCHandler.class.getResourceAsStream("input.txt");
+    }
 }

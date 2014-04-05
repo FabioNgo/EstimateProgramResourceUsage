@@ -9,21 +9,20 @@ import java.util.Vector;
  * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
  */
 public class IndentChecker implements IChecker, IndentCheckerConstants {
-   int l = 0; // l is level of braces
-     //boolean inSwitch = false;
-        Vector<Warning > warnings;
-         char separator = 1;
-         boolean inDo = false;
-         boolean inTry = false;
-         Token otherToken = null;
-         Token firstSpaces = null;
-         Token lastSpaces = null;
-         char newlineTok = 2;
-         boolean endOfLine = false;
-         String shouldNewLine ="";
-         boolean inLongLine = true;
-         boolean inWrapLine = false;
-         boolean inCode = false;
+   int l = 0;
+    Vector<Warning > warnings;
+     char separator = 1;
+     boolean inDo = false;
+     boolean inTry = false;
+     Token otherToken = null;
+     Token firstSpaces = null;
+     Token lastSpaces = null;
+     char newlineTok = 2;
+     boolean endOfLine = false;
+     String shouldNewLine ="";
+     boolean inLongLine = true;
+     boolean inWrapLine = false;
+     boolean inCode = false;
    static public final class ModifierSet
    {
      /* Definitions of the bits in the modifiers field.  */
@@ -125,14 +124,14 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     inDo = false;
         inTry = false;
         otherToken = null;
-        firstSpaces = null;
-        lastSpaces = null;
-        newlineTok = 2;
-        endOfLine = false;
-        shouldNewLine ="";
-        inLongLine = true;
-        inWrapLine = false;
-        inCode = false;
+    firstSpaces = null;
+    lastSpaces = null;
+    newlineTok = 2;
+    endOfLine = false;
+    shouldNewLine ="";
+    inLongLine = true;
+    inWrapLine = false;
+    inCode = false;
   }
 
   public Vector<Warning> getWarnings()
@@ -515,8 +514,8 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       }
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 124:
-      jj_consume_token(124);
+    case 125:
+      jj_consume_token(125);
       break;
     default:
       ;
@@ -2573,7 +2572,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
             default:
               if (jj_2_46(2147483647)) {
                 ResultType();
+                SpaChk("");
                 jj_consume_token(DOT);
+                SpaChk("");
                 jj_consume_token(CLASS);
               } else {
                 switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4684,11 +4685,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  private boolean jj_3R_134() {
-    if (jj_3R_148()) return true;
-    return false;
-  }
-
   private boolean jj_3R_73() {
     if (jj_scan_token(STRICTFP)) return true;
     if (jj_3R_81()) return true;
@@ -5064,7 +5060,16 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3_46() {
     if (jj_3R_92()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
+    }
     if (jj_scan_token(DOT)) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
+    }
     if (jj_scan_token(CLASS)) return true;
     return false;
   }
@@ -5126,7 +5131,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_265() {
     if (jj_3R_92()) return true;
+    if (jj_3R_81()) return true;
     if (jj_scan_token(DOT)) return true;
+    if (jj_3R_81()) return true;
     if (jj_scan_token(CLASS)) return true;
     return false;
   }
@@ -5250,9 +5257,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   private boolean jj_3R_292() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(97)) {
+    if (jj_scan_token(98)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(98)) return true;
+    if (jj_scan_token(99)) return true;
     }
     return false;
   }
@@ -5382,11 +5389,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     }
     if (jj_scan_token(RPAREN)) return true;
     xsp = jj_scanpos;
+    if (jj_scan_token(89)) {
+    jj_scanpos = xsp;
     if (jj_scan_token(88)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(87)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(75)) {
+    if (jj_scan_token(76)) {
     jj_scanpos = xsp;
     if (jj_scan_token(72)) {
     jj_scanpos = xsp;
@@ -5515,11 +5522,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(101)) {
-    jj_scanpos = xsp;
     if (jj_scan_token(102)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(106)) return true;
+    if (jj_scan_token(103)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(107)) return true;
     }
     }
     return false;
@@ -5538,9 +5545,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   private boolean jj_3R_278() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(99)) {
+    if (jj_scan_token(100)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(100)) return true;
+    if (jj_scan_token(101)) return true;
     }
     if (jj_3R_81()) return true;
     if (jj_3R_276()) return true;
@@ -5567,11 +5574,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(101)) {
-    jj_scanpos = xsp;
     if (jj_scan_token(102)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(106)) return true;
+    if (jj_scan_token(103)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(107)) return true;
     }
     }
     if (jj_3R_81()) return true;
@@ -5586,15 +5593,15 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(99)) {
-    jj_scanpos = xsp;
     if (jj_scan_token(100)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(108)) {
+    if (jj_scan_token(101)) {
     jj_scanpos = xsp;
     if (jj_scan_token(109)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(85)) return true;
+    if (jj_scan_token(110)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(86)) return true;
     }
     }
     }
@@ -5616,15 +5623,15 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(99)) {
-    jj_scanpos = xsp;
     if (jj_scan_token(100)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(108)) {
+    if (jj_scan_token(101)) {
     jj_scanpos = xsp;
     if (jj_scan_token(109)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(85)) return true;
+    if (jj_scan_token(110)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(86)) return true;
     }
     }
     }
@@ -5641,11 +5648,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(107)) {
+    if (jj_scan_token(108)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(122)) {
+    if (jj_scan_token(123)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(121)) return true;
+    if (jj_scan_token(122)) return true;
     }
     }
     return false;
@@ -5668,13 +5675,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(86)) {
+    if (jj_scan_token(87)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(123)) {
+    if (jj_scan_token(124)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(92)) {
+    if (jj_scan_token(93)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(93)) return true;
+    if (jj_scan_token(94)) return true;
     }
     }
     }
@@ -5685,11 +5692,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(107)) {
+    if (jj_scan_token(108)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(122)) {
+    if (jj_scan_token(123)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(121)) return true;
+    if (jj_scan_token(122)) return true;
     }
     }
     if (jj_3R_81()) return true;
@@ -5721,13 +5728,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(86)) {
+    if (jj_scan_token(87)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(123)) {
+    if (jj_scan_token(124)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(92)) {
+    if (jj_scan_token(93)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(93)) return true;
+    if (jj_scan_token(94)) return true;
     }
     }
     }
@@ -5761,9 +5768,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(91)) {
+    if (jj_scan_token(92)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(94)) return true;
+    if (jj_scan_token(95)) return true;
     }
     return false;
   }
@@ -5790,9 +5797,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(91)) {
+    if (jj_scan_token(92)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(94)) return true;
+    if (jj_scan_token(95)) return true;
     }
     if (jj_3R_81()) return true;
     if (jj_3R_255()) return true;
@@ -6055,29 +6062,29 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(85)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(110)) {
+    if (jj_scan_token(86)) {
     jj_scanpos = xsp;
     if (jj_scan_token(111)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(115)) {
+    if (jj_scan_token(112)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(108)) {
+    if (jj_scan_token(116)) {
     jj_scanpos = xsp;
     if (jj_scan_token(109)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(116)) {
+    if (jj_scan_token(110)) {
     jj_scanpos = xsp;
     if (jj_scan_token(117)) {
     jj_scanpos = xsp;
     if (jj_scan_token(118)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(112)) {
+    if (jj_scan_token(119)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(114)) {
+    if (jj_scan_token(113)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(113)) return true;
+    if (jj_scan_token(115)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(114)) return true;
     }
     }
     }
@@ -6315,7 +6322,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_359()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(81)) return true;
+    if (jj_scan_token(82)) return true;
     }
     return false;
   }
@@ -6381,7 +6388,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_3_68()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(82)) jj_scanpos = xsp;
+    if (jj_scan_token(83)) jj_scanpos = xsp;
     return false;
   }
 
@@ -6572,6 +6579,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
@@ -6735,7 +6743,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_100()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(76)) return true;
+    if (jj_scan_token(77)) return true;
     }
     return false;
   }
@@ -7025,11 +7033,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(SPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3_13() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_81()) return true;
@@ -7054,6 +7057,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
+  private boolean jj_3_1() {
+    if (jj_scan_token(SPACES)) return true;
+    return false;
+  }
+
   private boolean jj_3R_233() {
     if (jj_scan_token(THROW)) return true;
     if (jj_3R_81()) return true;
@@ -7067,11 +7075,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   private boolean jj_3R_245() {
     if (jj_3R_147()) return true;
     if (jj_3R_81()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_109() {
-    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7099,6 +7102,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_243() {
     if (jj_3R_81()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_109() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7132,15 +7140,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_343()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_81() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_109()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -7184,6 +7183,15 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   private boolean jj_3R_402() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_224()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_81() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -7600,11 +7608,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_3R_78()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(82)) {
+    if (jj_scan_token(83)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(85)) {
+    if (jj_scan_token(86)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(81)) return true;
+    if (jj_scan_token(82)) return true;
     }
     }
     return false;
@@ -7815,7 +7823,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     jj_scanpos = xsp;
     if (jj_3R_303()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(81)) return true;
+    if (jj_scan_token(82)) return true;
     }
     }
     return false;
@@ -7964,9 +7972,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(97)) {
+    if (jj_scan_token(98)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(98)) return true;
+    if (jj_scan_token(99)) return true;
     }
     return false;
   }
@@ -8028,9 +8036,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_81()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(97)) {
+    if (jj_scan_token(98)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(98)) return true;
+    if (jj_scan_token(99)) return true;
     }
     return false;
   }
@@ -8100,7 +8108,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_336()) jj_scanpos = xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(82)) jj_scanpos = xsp;
+    if (jj_scan_token(83)) jj_scanpos = xsp;
     xsp = jj_scanpos;
     if (jj_3R_337()) jj_scanpos = xsp;
     if (jj_scan_token(RBRACE)) return true;
@@ -8508,6 +8516,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_297() {
     if (jj_3R_298()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_134() {
+    if (jj_3R_148()) return true;
     return false;
   }
 
