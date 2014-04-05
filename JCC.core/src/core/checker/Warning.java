@@ -2,7 +2,7 @@ package core.checker;
 
 public abstract class Warning {
 	static final public int TYPE_NAMING = 1;
-	static final public int TYPE_INDENT = 2;
+	static final public int TYPE_SPACE = 2;
 	static final public int TYPE_COMMENT = 3;
 
 	Position pos;

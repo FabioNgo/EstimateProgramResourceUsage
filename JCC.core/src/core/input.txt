@@ -1,4 +1,6 @@
 public class JCCHandler {
+
+
     void main() {
         InputStream inputStream = JCCHandler.class.getResourceAsStream("input.txt");
     }

@@ -118,8 +118,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
    public void resetVariables()
    {
         warnings = new Vector<Warning >();
-        int l = 0; // l is level of braces
-    //inSwitch = false;
+        l = 0; // l is level of braces
     separator = 1;
     inDo = false;
         inTry = false;
@@ -225,22 +224,22 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                 }
                 comparedString += (t.image+shouldNewLine+separator);
     }
-            if(correctSpaces.contains("_")){
-
-                StringBuilder sb = new StringBuilder(correctSpaces);
-                sb.deleteCharAt(0);
-                correctSpaces = sb.toString();
-                if(getToken(1).beginColumn>70&&!inLongLine){
-                    Out("Warning: line "+getToken(1).beginLine+" too long\u005cn");
-                    inLongLine = true;
-
-                }
-                if(correctSpaces.contains("\u005cn")) inLongLine = false;
-                if(comparedString.contains("\u005cn")) inWrapLine = true;
-                else inWrapLine = false;
-            }else{
-                inWrapLine = false;
-            }
+//            if(correctSpaces.contains("_")){
+//                
+//                StringBuilder sb = new StringBuilder(correctSpaces);
+//                sb.deleteCharAt(0);
+//                correctSpaces = sb.toString();
+//                if(getToken(1).beginColumn>70&&!inLongLine){
+//                    Out("Warning: line "+getToken(1).beginLine+" too long\n");
+//                    inLongLine = true;
+//                    
+//                }
+//                if(correctSpaces.contains("\n")) inLongLine = false;
+//                if(comparedString.contains("\n")) inWrapLine = true;
+//                else inWrapLine = false;
+//            }else{
+//                inWrapLine = false;
+//            }
 
         if(firstSpaces != null)
         {
@@ -261,215 +260,225 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   }
 
   final public void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boolean inWrapLine) throws ParseException {
-        int currentLine = beginLine + subline;
-                StringBuilder sb = new StringBuilder(input);
-                //Comment Counting
-        int noOfComment=0;
-            for(int i=0;i<sb.length();i++){
-                    if(sb.charAt(i)== separator){
-                            noOfComment++;
-                    }
+       int currentLine = beginLine + subline;
+        StringBuilder sb = new StringBuilder(input);
+        // Comment Counting
+        int noOfComment = 0;
+        for (int i = 0; i < sb.length(); i++) {
+            if (sb.charAt(i) == separator) {
+                noOfComment++;
             }
-            if(noOfComment>1){
-                    Out("Warning: line "
-                    + currentLine
-                    +": Comments should be in separated lines. \u005cn"
-                    );
-            }
-            //indentation
-
-            String correctIndent = "";
-            if(!inWrapLine){
-            for(int i=0;i<l;i++){
-                    correctIndent +="    ";
-            }
-        }else{
-//            //Out("asdas");
-//            Stack temp = wrapLvl.get();
-//            for(int i=0;i<temp.endCol+temp.addition;i++){
-//                correctIndent+=" ";
-//            }
         }
-            //if(!inWrapLine){
-                String startSpaces = "";
-                for(int i=0;i<sb.length();i++){
-                    if(sb.charAt(i)==' ') startSpaces+=" ";
-                    else break;
-                }
-            if(!startSpaces.equals(correctIndent)&&chkIndent){
-                    Out("Warning: line "+ currentLine +": Wrong indentation.");
-                    if(!inWrapLine) Out(" The correct one is "
-                                            +(correctIndent.length()/4)
-                                            +" tab(s).\u005cn"
-                                   );
-                    else {
-//	                  if(wrapLvl.get().addition==0){
-//	                    Out(" The correct one is below and right after '"
-//	                            +wrapLvl.get().image
-//                                +"' at line "
-//                                +(wrapLvl.get().line)+"\n"
-//                            );
-//	                }else{
-//	                    Out(" The correct one is below '"
-//	                            +wrapLvl.get().image
-//                                +"' at line "
-//                                +(wrapLvl.get().line)
-//                                +" and more "
-//                                +wrapLvl.get().addition
-//                                + " spaces\n"
-//                            );
-//	                }
+        if (noOfComment > 1) {
+            String[] args = new String[0];
+            warnings.add(new WarningSpace(new Position(currentLine,
+                    currentLine, -1, -1), args, WarningSpace.SINGLELINECOMMENT));
+        }
+        // indentation
 
-                    }
+        String correctIndent = "";
+        if (!inWrapLine) {
+            for (int i = 0; i < l; i++) {
+                correctIndent += "    ";
+            }
+        } else {
+            // //Out("asdas");
+            // Stack temp = wrapLvl.get();
+            // for(int i=0;i<temp.endCol+temp.addition;i++){
+            // correctIndent+=" ";
+            // }
+        }
+        // if(!inWrapLine){
+        String startSpaces = "";
+        for (int i = 0; i < sb.length(); i++) {
+            if (sb.charAt(i) == ' ')
+                startSpaces += " ";
+            else
+                break;
+        }
+        if (!startSpaces.equals(correctIndent) && chkIndent) {
+            String[] args = new String[2];
 
-            }
-            //}
-            if(subline!=0){
-                for(int i=0;i<sb.length();){
-                    if(sb.charAt(i)==' ') sb.deleteCharAt(i);
-                    else break;
-                }
-            }
-            if(sb.length()>0){
-                //newline
-                if(sb.charAt(sb.length()-1)==newlineTok){
-                        Out("Warning: line "
-                            + currentLine
-                            +": Should be on a new line after a comment.\u005cn"
-                            );
-                }
-                //space at the end of line
-                if(endOfLine){
-                    if((sb.charAt(sb.length()-1)==' '||sb.charAt(sb.length()-1)=='\u005ct')){
-                            Out("Warning: line "
-                                + currentLine
-                                +": Should not leave space at the end of line.\u005cn"
-                                );
-                    }
-                }
+            Out("Warning: line " + currentLine + ": Wrong indentation.");
+            if (!inWrapLine) {
+                args[0] = "false";
+                args[1] = String.valueOf(correctIndent.length() / 4);
+                warnings.add(new WarningSpace(new Position(currentLine,
+                        currentLine, -1, -1), args, WarningSpace.INDENT));
+            } else {
+                // if(wrapLvl.get().addition==0){
+                // Out(" The correct one is below and right after '"
+                // +wrapLvl.get().image
+                // +"' at line "
+                // +(wrapLvl.get().line)+"\n"
+                // );
+                // }else{
+                // Out(" The correct one is below '"
+                // +wrapLvl.get().image
+                // +"' at line "
+                // +(wrapLvl.get().line)
+                // +" and more "
+                // +wrapLvl.get().addition
+                // + " spaces\n"
+                // );
+                // }
 
             }
-            //space before comment
-            if(subline==0){
-                for(int i=0;i<sb.length();i++){
-                    if(sb.charAt(i)==separator){
-                      if(inCode) {
-                        if(i!=1){
-                            Out("Warning: line "
-                                + currentLine
-                                +": Should have one space before comment.\u005cn"
-                                );
-                            for(int j=0;i<sb.length();){
-                                if(sb.charAt(j)==' ') sb.deleteCharAt(j);
-                                else break;
+
+        }
+        // }
+        if (subline != 0) {
+            for (int i = 0; i < sb.length();) {
+                if (sb.charAt(i) == ' ')
+                    sb.deleteCharAt(i);
+                else
+                    break;
+            }
+        }
+        if (sb.length() > 0) {
+            // newline
+            if (sb.charAt(sb.length() - 1) == newlineTok) {
+                String[] args = new String[0];
+                warnings.add(new WarningSpace(new Position(currentLine,
+                        currentLine, -1, -1), args, WarningSpace.ENDLINECOMMENT));
+
+            }
+            // space at the end of line
+            if (endOfLine) {
+                if ((sb.charAt(sb.length() - 1) == ' ' || sb
+                        .charAt(sb.length() - 1) == '\u005ct')) {
+                    String[] args = new String[0];
+                    warnings.add(new WarningSpace(new Position(currentLine,
+                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
+                }
+            }
+
+        }
+        // space before comment
+        if (subline == 0) {
+            for (int i = 0; i < sb.length(); i++) {
+                if (sb.charAt(i) == separator) {
+                    if (inCode) {
+
+                        if (i != 1) {
+                            String[] args = new String[1];
+                            args[0] = String.valueOf(1);
+                            warnings.add(new WarningSpace(new Position(
+                                    currentLine, currentLine, -1, -1), args,
+                                    WarningSpace.COMMENTSPACE));
+                            for (int j = 0; i < sb.length();) {
+                                if (sb.charAt(j) == ' ')
+                                    sb.deleteCharAt(j);
+                                else
+                                    break;
                             }
                         }
-                      }else
-                      {
-                        if(i!=0){
-                        Out("Warning: line "
-                            + currentLine
-                            +": Should have no space before comment.\u005cn"
-                            );
-                        for(int j=0;i<sb.length();){
-                            if(sb.charAt(j)==' ') sb.deleteCharAt(j);
-                            else break;
+                    } else {
+
+                        if (i != 0) {
+                            String[] args = new String[1];
+                            args[0] = String.valueOf(0);
+                            warnings.add(new WarningSpace(new Position(
+                                    currentLine, currentLine, -1, -1), args,
+                                    WarningSpace.COMMENTSPACE));
+
+                            for (int j = 0; i < sb.length();) {
+                                if (sb.charAt(j) == ' ')
+                                    sb.deleteCharAt(j);
+                                else
+                                    break;
+                            }
                         }
-                    }
-                      }
                     }
                 }
             }
+        }
   }
 
   final public void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine, int beginColumn) throws ParseException {
             StringBuilder sb = new StringBuilder(comparedSpace);
-            int lnNotConsidered = 0;
-            boolean hasNewline = false;
-            boolean chkIndent = false;
-                if(sb.length()>0){
-                    sb.deleteCharAt(sb.length()-1);
-                }
-                comparedSpace = sb.toString();
-            int sublines = 0;
-            if(comparedSpace.contains("\u005cn")){
-                endOfLine = true;
-            }else{
-                endOfLine = false;
-            }
-                String[] comparedSpaces = comparedSpace.split("\u005cn",-1);
-                String[] correctSpaces = correctSpace.split("\u005cn",-1);
-                if(comparedSpace.contains("\u005cn")){
-            hasNewline = true;
-        }else{
-            hasNewline = false;
+        int lnNotConsidered = 0;
+        boolean chkIndent = false;
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
         }
-                for(int i=0;i<comparedSpaces.length;i++){
-                    if(i!=0){
-                        chkIndent = true;
-                    }else{
-                        chkIndent = false;
-                    }
-                    /*if(lvlUp&&i==comparedSpaces.length-1){
-	            l--;
-	            lvlUp=false;
-	        }*/
-            if(comparedSpaces[i].contains(String.valueOf(separator))) {
-                FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+        comparedSpace = sb.toString();
+        int sublines = 0;
+        if (comparedSpace.contains("\u005cn")) {
+            endOfLine = true;
+        } else {
+            endOfLine = false;
+        }
+        String[] comparedSpaces = comparedSpace.split("\u005cn", -1);
+        String[] correctSpaces = correctSpace.split("\u005cn", -1);
+        if (comparedSpace.contains("\u005cn")) {
+        } else {
+        }
+        for (int i = 0; i < comparedSpaces.length; i++) {
+            if (i != 0) {
+                chkIndent = true;
             } else {
-                if(i==0||i==comparedSpaces.length-1) {
-                    FormalCheck(comparedSpaces[i],beginLine,sublines,chkIndent,inWrapLine);
+                chkIndent = false;
+            }
+            /*
+             * if(lvlUp&&i==comparedSpaces.length-1){ l--; lvlUp=false; }
+             */
+            if (comparedSpaces[i].contains(String.valueOf(separator))) {
+                FormalCheck(comparedSpaces[i], beginLine, sublines, chkIndent,
+                        inWrapLine);
+            } else {
+                if (i == 0 || i == comparedSpaces.length - 1) {
+                    FormalCheck(comparedSpaces[i], beginLine, sublines,
+                            chkIndent, inWrapLine);
                 }
             }
 
-                        sublines++;
+            sublines++;
+        }
+        // new line checking
+        // lnNotConsidered =
+        if (comparedSpaces.length > 0) {
+            for (int i = 1; i < comparedSpaces.length; i++) {
+                if (comparedSpaces[i].contains(Character.toString(separator))) {
+                    lnNotConsidered++;
                 }
-                //new line checking
-                //lnNotConsidered = 
-                if(comparedSpaces.length>0){
-                    for(int i =1;i<comparedSpaces.length;i++){
-                        if(comparedSpaces[i].contains(Character.toString(separator))){
-                            lnNotConsidered ++;
-                        }
-                    }
-                    if(!inCode) lnNotConsidered ++;
-                    //if(comparedSpaces)
-            if(comparedSpaces.length-lnNotConsidered<correctSpaces.length){
+            }
+            if (!inCode)
+                lnNotConsidered++;
+            // if(comparedSpaces)
+            if (comparedSpaces.length - lnNotConsidered < correctSpaces.length) {
+                String[] args = new String[0];
+                warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.NEWLINE));
 
-                            Out("Warning: line "+ beginLine +": Should go to a new line.\u005cn");
-                    }
-                    if(inWrapLine) lnNotConsidered++;
-                    if(comparedSpaces.length-lnNotConsidered>correctSpaces.length){
-                    Out("Warning: line "+ beginLine +": Should not go to the new line.\u005cn");
-                    }
-                    if(comparedSpaces.length-lnNotConsidered==correctSpaces.length&&! endOfLine){
-                        if(comparedSpaces[0].contains(Character.toString(separator))){
-                            Out("Warning: line "+ beginLine +": Comment should not be inside statement.\u005cn");
-                        }else{
-                            if (comparedSpaces[0].compareTo(correctSpaces[0]) != 0&&!inWrapLine){
-                                if(correctSpaces[0].length()!=0){
-                                    Out("Warning: line "
-                                        + getToken(1).beginLine
-                                        + ", column"
-                                        + getToken(1).beginColumn
-                                        +", before '"
-                                        + getToken(1).image
-                                        +"': Number of Spaces should be "
-                                        +correctSpaces[0].length() + ".\u005cn");
-                                }else{
-                                    Out("Warning: line "
-                                         + getToken(1).beginLine
-                                         + ", column "
-                                         + getToken(1).beginColumn
-                                         +", before '"
-                                         + getToken(1).image
-                                         +"': Should not use space.\u005cn");
-                                }
-                                }
-                        }
+            }
+            if (inWrapLine)
+                lnNotConsidered++;
+            if (comparedSpaces.length - lnNotConsidered > correctSpaces.length) {
+                String[] args = new String[0];
+                warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.NOTNEWLINE));
+            }
+            if (comparedSpaces.length - lnNotConsidered == correctSpaces.length
+                    && !endOfLine) {
+                if (comparedSpaces[0].contains(Character.toString(separator))) {
+                    String[] args = new String[0];
+                    warnings.add(new WarningSpace(new Position(beginLine,
+                            beginLine, -1, -1), args, WarningSpace.INNERCOMMNET));
+
+                } else {
+                    if (comparedSpaces[0].compareTo(correctSpaces[0]) != 0
+                            && !inWrapLine) {
+                            String[] args = new String[1];
+                            args[0] = String.valueOf(correctSpaces[0].length());
+                            warnings.add(new WarningSpace(new Position(getToken(1).beginLine,
+                                    beginLine, getToken(1).beginColumn, -1), args, WarningSpace.SPACE));
 
                     }
                 }
+
+            }
+        }
   }
 
 /*****************************************
@@ -4685,32 +4694,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  private boolean jj_3R_73() {
-    if (jj_scan_token(STRICTFP)) return true;
-    if (jj_3R_81()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_72() {
-    if (jj_scan_token(VOLATILE)) return true;
-    if (jj_3R_81()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_71() {
-    if (jj_scan_token(TRANSIENT)) return true;
-    if (jj_3R_81()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_296() {
-    if (jj_3R_114()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_297()) jj_scanpos = xsp;
-    return false;
-  }
-
   private boolean jj_3R_70() {
     if (jj_scan_token(NATIVE)) return true;
     if (jj_3R_81()) return true;
@@ -7057,11 +7040,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(SPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_233() {
     if (jj_scan_token(THROW)) return true;
     if (jj_3R_81()) return true;
@@ -7105,7 +7083,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_109() {
+  private boolean jj_3_1() {
     if (jj_scan_token(SPACES)) return true;
     return false;
   }
@@ -7186,12 +7164,8 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_81() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_109()) { jj_scanpos = xsp; break; }
-    }
+  private boolean jj_3R_109() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7242,6 +7216,15 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     if (jj_3R_331()) {
     jj_scanpos = xsp;
     if (jj_3R_332()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_81() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -8521,6 +8504,32 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
   private boolean jj_3R_134() {
     if (jj_3R_148()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_73() {
+    if (jj_scan_token(STRICTFP)) return true;
+    if (jj_3R_81()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_72() {
+    if (jj_scan_token(VOLATILE)) return true;
+    if (jj_3R_81()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_71() {
+    if (jj_scan_token(TRANSIENT)) return true;
+    if (jj_3R_81()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_296() {
+    if (jj_3R_114()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_297()) jj_scanpos = xsp;
     return false;
   }
 
