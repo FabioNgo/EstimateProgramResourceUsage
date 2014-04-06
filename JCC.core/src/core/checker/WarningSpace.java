@@ -23,49 +23,49 @@ public class WarningSpace extends Warning {
 	public String toString() {
 		String result = "";
 		if(type == SINGLELINECOMMENT ){
-			result = "Warning: Line "
+			result = "At line "
 		            + pos.beginLine
-		            +": Comments should be in separated lines. \n";
+		            +": Comments should be in separated lines";
 			return result;
 		}
 		if(type == INDENT ){
-			result = "Warning: Line "+ pos.beginLine +": Wrong indentation.";
+			result = "At line "+ pos.beginLine +": Wrong indentation.";
             if(args[0]=="false"){
-            	result+= " The correct one is " + args[1] +" tab(s).\n";
+            	result+= " The correct one is " + args[1] +" tab(s)";
             }
 			return result;
 		}
 		if(type == ENDLINECOMMENT){
-			result = "Warning: Line " + pos.beginLine +": Should be on a new line after a comment.\n";
+			result = "At line " + pos.beginLine +": Should be on a new line after a comment";
 			return result;
 		}
 		if(type == ENDSPACE){
-			result = "Warning: Line " + pos.beginLine +": Should not leave space at the end of line.\n";
+			result = "At line " + pos.beginLine +": Should not leave space at the end of line";
 			return result;
 		}
 		if(type ==  COMMENTSPACE){
 			if(args[0] == "1"){
-				result = "Warning: Line " + pos.beginLine +": Should have one space before comment.n";
+				result = "At line " + pos.beginLine +": Should have one space before comment";
 			}else{
-				result = "Warning: Line " + pos.beginLine +": Should have no space before comment.\n";
+				result = "At line " + pos.beginLine +": Should have no space before comment";
 			}
 			return result;
 		}
 		if(type ==NEWLINE){
-			result = "Warning: Line "+ pos.beginLine +": Should go to a new line.\n";
+			result = "At line "+ pos.beginLine +": Should go to a new line";
 			return result;
 		}
 		if(type ==NOTNEWLINE){
-			result = "Warning: Line "+ pos.beginLine +": Should not go to a new line.\n";
+			result = "At line "+ pos.beginLine +": Should not go to a new line";
 			return result;
 		}
 		if(type == INNERCOMMNET){
-			result = "Warning: Line " + pos.beginLine + ": Comment should not be inside statement.\n";
+			result = "At line " + pos.beginLine + ": Comment should not be inside statement";
 			return result;
 		}
 		if(type == SPACE){
-			result = "Warning: Line " + pos.beginLine + ", column" + pos.beginColumn
-					+ "': Number of spaces should be " + args[0] + ".\n";
+			result = "At line " + pos.beginLine + ", column" + pos.beginColumn
+					+ "': Number of spaces should be " + args[0] + "";
 			return result;
 		}
 		//String result = "Warning"

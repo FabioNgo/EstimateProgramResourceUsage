@@ -10,7 +10,7 @@ import java.util.Vector;
  */
 public class IndentChecker implements IChecker, IndentCheckerConstants {
    int l = 0;
-    Vector<Warning > warnings;
+    Vector<Warning > warnings = new Vector<Warning >();
      char separator = 1;
      boolean inDo = false;
      boolean inTry = false;
@@ -117,7 +117,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
 
    public void resetVariables()
    {
-        warnings = new Vector<Warning >();
+        warnings.clear();
         l = 0; // l is level of braces
     separator = 1;
     inDo = false;
@@ -299,7 +299,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
         if (!startSpaces.equals(correctIndent) && chkIndent) {
             String[] args = new String[2];
 
-            Out("Warning: line " + currentLine + ": Wrong indentation.");
+//            Out("Warning: line " + currentLine + ": Wrong indentation.");
             if (!inWrapLine) {
                 args[0] = "false";
                 args[1] = String.valueOf(correctIndent.length() / 4);
