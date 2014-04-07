@@ -54,7 +54,10 @@ public class IndentChecker implements IChecker
   boolean chkIndent = true;
    int l = 0;
     Vector<Warning > warnings = new Vector<Warning >();
+<<<<<<< HEAD
     Stack<IndentLevel > lvl = new Stack<IndentLevel >();
+=======
+>>>>>>> 380647b4ed15dc132f97dad02b10b9ab1d80bcb8
      char separator = 1;
      boolean inDo = false;
      boolean inTry = false;
@@ -160,8 +163,11 @@ public class IndentChecker implements IChecker
    
 
    public void resetVariables()   {	warnings.clear();
+<<<<<<< HEAD
 	lvl.clear();
 	chkIndent = true;
+=======
+>>>>>>> 380647b4ed15dc132f97dad02b10b9ab1d80bcb8
 	l = 0; // l is level of braces
     separator = 1;
     inDo = false;
