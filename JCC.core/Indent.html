@@ -196,6 +196,17 @@
   <TD>
    <PRE>
 &lt;DEFAULT&gt; TOKEN : {
+&lt;TOKEN_IDENTIFIER: &lt;CLASS&gt;&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
 &lt;LPAREN: "("&gt;
 | &lt;RPAREN: ")"&gt;
 | &lt;LBRACE: "{"&gt;
@@ -318,17 +329,17 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">CompilationUnit</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod1">SpaChk</A> ( <A HREF="#prod5">PackageDeclaration</A> )? ( <A HREF="#prod6">ImportDeclaration</A> )* ( <A HREF="#prod7">TypeDeclaration</A> )+ ( "\u001a" )? ( &lt;STUFF_TO_IGNORE: ~[]&gt; )? &lt;EOF&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod1">SpaChk</A> ( <A HREF="#prod5">PackageDeclaration</A> )? <A HREF="#prod6">ImportDeclaration</A> ( <A HREF="#prod7">TypeDeclaration</A> )+ ( "\u001a" )? ( &lt;STUFF_TO_IGNORE: ~[]&gt; )? &lt;EOF&gt;</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">PackageDeclaration</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">Modifiers</A> "package" <A HREF="#prod1">SpaChk</A> ( <A HREF="#prod9">Name</A> )* <A HREF="#prod1">SpaChk</A> ";" <A HREF="#prod10">OutNewLine</A></TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">Modifiers</A> "package" <A HREF="#prod1">SpaChk</A> ( <A HREF="#prod9">Name</A> )* ";" <A HREF="#prod10">OutNewLine</A></TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">ImportDeclaration</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>"import" <A HREF="#prod1">SpaChk</A> ( "static" <A HREF="#prod1">SpaChk</A> )? ( <A HREF="#prod9">Name</A> )* <A HREF="#prod1">SpaChk</A> ( "." <A HREF="#prod1">SpaChk</A> "*" )? ";" <A HREF="#prod10">OutNewLine</A></TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( "import" <A HREF="#prod1">SpaChk</A> ( "static" <A HREF="#prod1">SpaChk</A> )? ( <A HREF="#prod9">Name</A> )* <A HREF="#prod1">SpaChk</A> ( "." <A HREF="#prod1">SpaChk</A> "*" )? ";" ( ( <A HREF="#prod10">OutNewLine</A> ) | ( <A HREF="#prod10">OutNewLine</A> ) ) )*</TD>
 </TR>
  <!-- Special token -->
  <TR>
@@ -413,7 +424,7 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">ClassOrInterfaceBody</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>"{" <A HREF="#prod10">OutNewLine</A> ( <A HREF="#prod22">ClassOrInterfaceBodyDeclaration</A> )* "}" <A HREF="#prod10">OutNewLine</A></TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"{" <A HREF="#prod10">OutNewLine</A> ( <A HREF="#prod22">ClassOrInterfaceBodyDeclaration</A> )* "}" ( ( <A HREF="#prod10">OutNewLine</A> ) | ( <A HREF="#prod10">OutNewLine</A> ) )</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod22">ClassOrInterfaceBodyDeclaration</A></TD>
@@ -532,7 +543,7 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">ClassOrInterfaceType</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt; ( <A HREF="#prod1">SpaChk</A> <A HREF="#prod46">TypeArguments</A> )? ( "." <A HREF="#prod1">SpaChk</A> &lt;IDENTIFIER&gt; ( <A HREF="#prod1">SpaChk</A> <A HREF="#prod46">TypeArguments</A> <A HREF="#prod1">SpaChk</A> )? )*</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt; ( <A HREF="#prod1">SpaChk</A> <A HREF="#prod46">TypeArguments</A> )? ( "." <A HREF="#prod1">SpaChk</A> ( &lt;IDENTIFIER&gt; ) ( <A HREF="#prod1">SpaChk</A> <A HREF="#prod46">TypeArguments</A> <A HREF="#prod1">SpaChk</A> )? )*</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod46">TypeArguments</A></TD>
@@ -922,7 +933,7 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod37">ResultType</A> "." "class"</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod37">ResultType</A> <A HREF="#prod1">SpaChk</A> "." <A HREF="#prod1">SpaChk</A> "class" <A HREF="#prod1">SpaChk</A></TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE></TD>

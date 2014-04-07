@@ -33,7 +33,7 @@ options {
   TOKEN_FACTORY = "MyIndentToken";
   JDK_VERSION = "1.5";
   ERROR_REPORTING = false;
-  //DEBUG_LOOKAHEAD = true;
+  DEBUG_LOOKAHEAD = true;
   //DEBUG_TOKEN_MANAGER = true;
 }
 
@@ -42,6 +42,7 @@ PARSER_BEGIN(IndentChecker)
 package core.checker;
 import java.io.*;
 import java.util.Vector;
+import java.util.Stack;
 
 
 /**
@@ -50,8 +51,10 @@ import java.util.Vector;
  */
 public class IndentChecker implements IChecker
 {
+  boolean chkIndent = true;
    int l = 0;
-    Vector<Warning > warnings;
+    Vector<Warning > warnings = new Vector<Warning >();
+    Stack<IndentLevel > lvl = new Stack<IndentLevel >();
      char separator = 1;
      boolean inDo = false;
      boolean inTry = false;
@@ -156,7 +159,9 @@ public class IndentChecker implements IChecker
 
    
 
-   public void resetVariables()   {	warnings = new Vector<Warning >();
+   public void resetVariables()   {	warnings.clear();
+	lvl.clear();
+	chkIndent = true;
 	l = 0; // l is level of braces
     separator = 1;
     inDo = false;
@@ -325,7 +330,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
 
         String correctIndent = "";
         if (!inWrapLine) {
-            for (int i = 0; i < l; i++) {
+            for (int i = 0; i < lvl.peek().lvl; i++) {
                 correctIndent += "    ";
             }
         } else {
@@ -340,13 +345,14 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
         for (int i = 0; i < sb.length(); i++) {
             if (sb.charAt(i) == ' ')
                 startSpaces += " ";
-            else
-                break;
+            else if (sb.charAt(i) == '\t')
+                startSpaces += "    ";
+            else break;
         }
         if (!startSpaces.equals(correctIndent) && chkIndent) {
             String[] args = new String[2];
 
-            Out("Warning: line " + currentLine + ": Wrong indentation.");
+//            Out("Warning: line " + currentLine + ": Wrong indentation.");
             if (!inWrapLine) {
                 args[0] = "false";
                 args[1] = String.valueOf(correctIndent.length() / 4);
@@ -395,8 +401,8 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                 if ((sb.charAt(sb.length() - 1) == ' ' || sb
                         .charAt(sb.length() - 1) == '\u005ct')) {
                     String[] args = new String[0];
-                    warnings.add(new WarningSpace(new Position(currentLine,
-                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
+                    //Out("a");
+//                    warnings.add(new WarningSpace(new Position(currentLine,//                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
                 }
             }
 
@@ -1444,22 +1450,61 @@ TOKEN :
  * Program structuring syntax follows.
  */
 
+void IncIndent(String image, int l):
+{}{
+  {
+   
+    if(l==0)    {
+      lvl.push(new IndentLevel(image,l));    }else    {
+      lvl.push(new IndentLevel(image,lvl.peek().lvl+l));    }
+     Out("+"+lvl.peek()+"\n");
+      }}
+void DecIndent():
+{
+}
+{
+  {
+    lvl.pop();
+    Out("-"+lvl.peek()+"\n");
+  }
+}
+void ChkIndent() :
+{}
+{
+    (
+      
+        LOOKAHEAD((< SPACES >)+)
+           {
+             String a = "\n";
+           int l = lvl.peek().lvl;
+           for(int i=0;i<l;i++) {
+               a+="    ";
+           }
+           SpaChk(a);
+              }
+      |
+      Out("")
+    )
+    
+}
 void CompilationUnit():
 {}
 {
+  IncIndent("start", 0)
   SpaChk("")
-  [LOOKAHEAD(4) PackageDeclaration()]
+  
+  [LOOKAHEAD(5) PackageDeclaration()]
   ImportDeclaration()
   (TypeDeclaration() )+
   ( < "\u001a" > )?
   ( <STUFF_TO_IGNORE: ~[]> )?
-  <EOF>
+  ChkIndent() <EOF>
 }
 
 void PackageDeclaration():
 {}
 {
-  {inCode = true;}  Modifiers() "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
+  {inCode = true;}  ChkIndent() "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
 }
 
 void ImportDeclaration():
@@ -1468,9 +1513,8 @@ void ImportDeclaration():
   {inCode = true;}
   (
 
-    "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
-    (            LOOKAHEAD((< SPACES >)* "import")
-        ( OutNewLine(";"))
+   ChkIndent()  "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
+    (            LOOKAHEAD( "import")                  Out("")
         |
         (OutNewLine("\n"))
     )
@@ -1531,7 +1575,8 @@ void TypeDeclaration():
    {inCode = true;} int modifiers;
 }
 {
-  ";"
+  ChkIndent()
+(      ";"
 |
   modifiers = Modifiers()
   (
@@ -1541,6 +1586,8 @@ void TypeDeclaration():
    |
      AnnotationTypeDeclaration(modifiers)
   )
+)
+DecIndent()
 }
 
 
@@ -1636,11 +1683,11 @@ void TypeBound():
 void ClassOrInterfaceBody(boolean isInterface):
 {}
 {
-  "{" {l++;} OutNewLine("{")
-   ( ClassOrInterfaceBodyDeclaration(isInterface) )*
+  "{" IncIndent("class",1) //OutNewLine("{")
+   (ChkIndent() ClassOrInterfaceBodyDeclaration(isInterface) )*
    "}"
-   (     LOOKAHEAD((< SPACES >)* < EOF >)
-        (OutNewLine("}"))
+   (     LOOKAHEAD( < EOF >)
+        (Out(""))
         |
         ( OutNewLine("\n"))
     )
@@ -1652,14 +1699,14 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
    int modifiers;
 }
 {
-  LOOKAHEAD(3)
+  (    LOOKAHEAD(4)
   Initializer()
   {
      if (isInterface)
         throw new ParseException("An interface cannot have initializers");
   }
 |
-  modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
+  ChkIndent() modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
               // more checks, pass the modifiers down to the member
   (
       ClassOrInterfaceDeclaration(modifiers)
@@ -1681,6 +1728,7 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
   )
 |
   ";"
+)
 }
 void FieldDeclaration(int modifiers):
 {}
@@ -1737,6 +1785,7 @@ void ArrayInitializer():
 void MethodDeclaration(int modifiers):
 {}
 {
+  ChkIndent()
   // Modifiers already matched in the caller!
   [ TypeParameters() ]
   ResultType() SpaChk(" ")
@@ -1747,7 +1796,12 @@ void MethodDeclaration(int modifiers):
 |
   Out("")
   )
-  ( Block() | SpaChk("")  ";" OutNewLine(";") )
+  (
+    LOOKAHEAD((< SPACES >)* ";")
+    SpaChk("")  ";"
+  | 
+    IncIndent("method",1) Block() 
+    )
 }
 
 void MethodDeclarator():
@@ -1788,7 +1842,7 @@ void ConstructorDeclaration():
 |
   SpaChk(" ")
   )
-    "{" {l++;} OutNewLine("{")
+    "{" IncIndent("constructor",1) OutNewLine("{")
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
     (  BlockStatement() )*
   "}" OutNewLine("}")
@@ -1804,7 +1858,7 @@ void ExplicitConstructorInvocation():
 void Initializer():
 {}
 {
-  [ "static" ] Block()
+   [ "static" ] IncIndent("initializer",1) Block()
 }
 
 
@@ -2184,7 +2238,7 @@ void PrimaryPrefix():
   AllocationExpression()
 |
   LOOKAHEAD( ResultType() (< SPACES >)* "." (< SPACES >)* "class" )
-  ResultType() SpaChk("") "." SpaChk("") "class" 
+  ResultType() SpaChk("") "." SpaChk("") "class" SpaChk("")
 |
   (Name())+
 }
@@ -2293,21 +2347,27 @@ void ArrayDimsAndInits():
 void Statement():
 {}
 {
-  LOOKAHEAD(< IDENTIFIER > (< SPACES >)* ":")
-  LabeledStatement()
+(  
+  LOOKAHEAD((< SPACES >)* LabeledStatement())
+   LabeledStatement()
 |
-  AssertStatement()
+    AssertStatement()
 |
-  Block()
+  LOOKAHEAD(Block()) IncIndent("statement",1) Block()
 |
+    
   EmptyStatement()
 |
-  StatementExpression() SpaChk("") ";" OutNewLine(";")
+  
+  StatementExpression() SpaChk("") ";" //OutNewLine(";")
 |
+    
   SwitchStatement()
 |
+    
   IfStatement()
 |
+
   WhileStatement()
 |
   DoStatement()
@@ -2320,11 +2380,12 @@ void Statement():
 |
   ReturnStatement()
 |
-  ThrowStatement()
+   ThrowStatement()
 |
-  SynchronizedStatement()
+   SynchronizedStatement()
 |
   TryStatement()
+)
 }
 
 void AssertStatement():
@@ -2336,22 +2397,26 @@ void AssertStatement():
 void LabeledStatement():
 {}
 {
-  <IDENTIFIER> SpaChk("") ":" OutNewLine("") Statement()
+  <IDENTIFIER> SpaChk("") ":" //OutNewLine("")
+  Statement()
 }
 
 void Block():
 {}
 {
-  SpaChk(" ") "{" {l++;} OutNewLine("{")
-   ( BlockStatement() )*
-    "}" OutNewLine("}")
+  SpaChk(" ") "{"  
+           (LOOKAHEAD((< SPACES >)* BlockStatement()) (ChkIndent() BlockStatement()))*
+   
+   DecIndent() ChkIndent() "}" 
+   
+     
 }
 
 void BlockStatement():
 {}
 {
-  LOOKAHEAD( Modifiers() (< SPACES >)* Type() (< SPACES >)* <IDENTIFIER> )
-   LocalVariableDeclaration()  ";" OutNewLine(";") 
+  LOOKAHEAD( (< SPACES >)* Modifiers() (< SPACES >)* Type() (< SPACES >)* <IDENTIFIER> )
+   LocalVariableDeclaration()  ";" //OutNewLine(";") 
 |
   Statement()
 |
@@ -2361,14 +2426,14 @@ void BlockStatement():
 void LocalVariableDeclaration():
 {}
 {
-  Modifiers() Type() SpaChk(" ")  VariableDeclarator() SpaChk("")  
+  ChkIndent() Modifiers() Type() SpaChk(" ")  VariableDeclarator() SpaChk("")  
   ( "," SpaChk(" ") VariableDeclarator() SpaChk("") )* 
 }
 
 void EmptyStatement():
 {}
 {
-  ";" OutNewLine(";")
+  ";" //OutNewLine(";")
 }
 
 void StatementExpression():
@@ -2399,17 +2464,17 @@ void SwitchStatement():
 {}
 {
     //{inSwitch = true;}
-  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ") {l++;} "{"  OutNewLine("{")
-   (SwitchLabel() {l++;} ( BlockStatement() )* {l--;} )* "}"  OutNewLine("}") 
+  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ")  "{" IncIndent("switch",1)  
+      (SwitchLabel() ( BlockStatement() )* DecIndent() )* "}"  //OutNewLine("}") 
 }
 
 void SwitchLabel():
 {}
 {
 (
-  "case" SpaChk(" ")  Expression() SpaChk(" ") ":"
+   ChkIndent() "case" IncIndent("case",1) SpaChk(" ")  Expression() SpaChk(" ") ":" 
 |
-  "default" SpaChk(" ") ":"
+  "default" IncIndent("default",1)  SpaChk(" ") ":"
 )
 OutNewLine("")
 }
@@ -2424,15 +2489,15 @@ void IfStatement():
 {
     "if" SpaChk(" ") "(" SpaChk("") 
 Expression() SpaChk("") ")" 
-(LOOKAHEAD((<SPACES>)* "{") ( Block()) | ({l++;}OutNewLine("") {l--;} Statement())) 
+(LOOKAHEAD((<SPACES>)* "{") ( IncIndent("if",1) Block()) | (IncIndent("if",1) OutNewLine("")  Statement() DecIndent())) 
 //Out(getToken(0).image)
 (
     LOOKAHEAD("else")
     "else"
     (
-        LOOKAHEAD((< SPACES >)* "{") Block()
+        LOOKAHEAD((< SPACES >)* "{") IncIndent("else",1) Block()
         |
-        SpaChk(" ") Statement()
+        Statement()
     )
     |
     Out("")
@@ -2454,7 +2519,7 @@ void WhileStatement():
 void DoStatement():
 {}
 {
-  "do" Statement() "while" "(" Expression() ")" SpaChk("") ";" OutNewLine(";")
+  "do" Statement() "while" "(" Expression() ")" SpaChk("") ";" //OutNewLine(";")
 }
 
 void ForStatement():
@@ -2474,7 +2539,7 @@ void ForStatement():
     LOOKAHEAD((< SPACES >)* "{")
     Statement()
   |
-    {l++;} OutNewLine(")") Statement()
+    IncIndent("for",1) OutNewLine(")") Statement()
   )
   
 }
@@ -2541,7 +2606,7 @@ void ThrowStatement():
 void SynchronizedStatement():
 {}
 {
-  "synchronized" "(" Expression() ")" Block()
+  "synchronized" "(" Expression() ")" IncIndent("syncStatememt",1) Block()
 }
 
 void TryStatement():
@@ -2551,9 +2616,9 @@ void TryStatement():
  */
 {inTry = true;}
 {
-  "try"  Block()
-  ( "catch" SpaChk(" ") "("  SpaChk("") FormalParameter() SpaChk("") ")"  Block() )*
-  [ "finally"  Block() ]
+  "try" IncIndent("try",1) Block()
+  ( "catch" SpaChk(" ") "("  SpaChk("") FormalParameter() SpaChk("") ")"  IncIndent("catch",1) Block() )*
+  [ "finally" IncIndent("finally",1) Block() ]
 }
 
 /* We use productions to match >>>, >> and > so that we can keep the
@@ -2694,33 +2759,18 @@ void OutWhiteLine():
 
 void FirstLine(String s) :
 {
-    String indent ="\n";
   
    }
 {
-    //Out("Asd")
-    
-    LOOKAHEAD((<SPACES>)* "}")
-  	 {
-//  	 if(s.compareTo("{") == 0)//	  {//	    indent = "";//	  } 
-  	 l--; 
-  	 SpaChk(indent); 
-  	 }
-|
-    LOOKAHEAD((<SPACES>)* ("case"|"default"))
-    {
-        //Out(getToken(1).image+"\n");
-        l--;
-        SpaChk(indent);
-        l++;
-    }
-|
- 	{
- 	  
-		for (int i = 0; i < l; i++) indent= indent.concat("    ");
-			if(s.equals("\n")) indent= indent.concat("\n");
-	}  SpaChk(indent) 
-
+  {
+    if(s.compareTo("\n") ==0)    {
+      String a = "\n\n";
+       int l = lvl.peek().lvl;
+       for(int i=0;i<l;i++) {
+           a+="    ";
+       }
+       SpaChk(a);
+       chkIndent = false;    }  }          
 }
 
 void OutNewLine(String s) :

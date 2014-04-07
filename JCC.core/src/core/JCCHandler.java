@@ -1,10 +1,7 @@
 package core;
 
-import java.io.FileInputStream;
-
 import core.checker.*;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Vector;
@@ -13,8 +10,6 @@ public class JCCHandler {
 	final public static int CHECK_TYPE_COMMENT = 2;
 	final public static int CHECK_TYPE_INDENT = 1;
 	final public static int CHECK_TYPE_NAMING = 3;
-
-	public Vector<Warning> warnings;
 
 	final static int EXIT = 0;
 
@@ -37,8 +32,9 @@ public class JCCHandler {
 			System.out.print("\tWhat do you want?");
 			type = in.nextInt();
 
-			InputStream inputStream = JCCHandler.class.getResourceAsStream("input.txt");
-			
+			InputStream inputStream = JCCHandler.class
+					.getResourceAsStream("input.txt");
+
 			JCCHandler jccHandler = new JCCHandler(inputStream);
 			warnings = jccHandler.check(inputStream, type);
 			for (int i = 0; i < warnings.size(); i++) {
@@ -50,8 +46,9 @@ public class JCCHandler {
 	private IChecker checker;
 	private CommentChecker commentChecker;
 	private IndentChecker indentChecker;
-
 	private NamingChecker namingChecker;
+
+	public Vector<Warning> warnings;
 
 	public JCCHandler(InputStream stream) {
 		namingChecker = new NamingChecker(stream);
