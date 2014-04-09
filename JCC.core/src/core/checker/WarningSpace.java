@@ -24,6 +24,7 @@ public class WarningSpace extends Warning {
 	@Override
 	public String toString() {
 		String result = "";
+<<<<<<< HEAD
 		if (type == SINGLELINECOMMENT) {
 			result = "At line " + pos.beginLine
 					+ ": Comments should be in separated lines";
@@ -54,12 +55,41 @@ public class WarningSpace extends Warning {
 				result = "At line " + pos.beginLine
 						+ ": Should have no space before comment";
 				return result;
+=======
+		if(type == SINGLELINECOMMENT ){
+			result = "At line "
+		            + pos.beginLine
+		            +": Comments should be in separated lines";
+			return result;
+		}
+		if(type == INDENT ){
+			result = "At line "+ pos.beginLine +": Wrong indentation.";
+            if(args[0]=="false"){
+            	result+= " The correct one is " + args[1] +" tab(s)";
+            }
+			return result;
+		}
+		if(type == ENDLINECOMMENT){
+			result = "At line " + pos.beginLine +": Should be on a new line after a comment";
+			return result;
+		}
+		if(type == ENDSPACE){
+			result = "At line " + pos.beginLine +": Should not leave space at the end of line";
+			return result;
+		}
+		if(type ==  COMMENTSPACE){
+			if(args[0] == "1"){
+				result = "At line " + pos.beginLine +": Should have one space before comment";
+			}else{
+				result = "At line " + pos.beginLine +": Should have no space before comment";
+>>>>>>> f311ce0d79522341ec8f118301b209affa207332
 			}
 		}
 		if (type == NEWLINE) {
 			result = "At line " + pos.beginLine + ": Should go to a new line";
 			return result;
 		}
+<<<<<<< HEAD
 		if (type == NOTNEWLINE) {
 			result = "At line " + pos.beginLine
 					+ ": Should not go to a new line";
@@ -91,6 +121,29 @@ public class WarningSpace extends Warning {
 					+ args[0] + ".\n";
 			return result;
 		}
+=======
+		if(type ==NEWLINE){
+			result = "At line "+ pos.beginLine +": Should go to a new line";
+			return result;
+		}
+		if(type ==NOTNEWLINE){
+			result = "At line "+ pos.beginLine +": Should not go to a new line";
+			return result;
+		}
+		if(type == INNERCOMMNET){
+			result = "At line " + pos.beginLine + ": Comment should not be inside statement";
+			return result;
+		}
+		if(type == SPACE){
+			result = "At line " + pos.beginLine + ", column" + pos.beginColumn
+					+ "': Number of spaces should be " + args[0] + "";
+			return result;
+		}
+		//String result = "Warning"
+		// TODO Auto-generated method stub
+		return "";
+	}
+>>>>>>> f311ce0d79522341ec8f118301b209affa207332
 
 		return "";
 	}
