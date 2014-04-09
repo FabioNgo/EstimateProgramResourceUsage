@@ -1,35 +1,71 @@
-public class WarningSpace extends Warning {
-    public String toString() {
-        if (args[0] == "1")
-            result = "At line " + pos.beginLine + ": Should have one space before comment";
-        if (type == NEWLINE) {
-            result = "At line " + pos.beginLine + ": Should go to a new line";
-            return result;
+package core;
+
+import core.checker.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Scanner;
+import java.util.Vector;
+
+public class JCCHandler {
+    final public static int CHECK_TYPE_COMMENT = 2;
+    final public static int CHECK_TYPE_INDENT = 1;
+    final public static int CHECK_TYPE_NAMING = 3;
+    public Vector<Warning> warnings;
+    final static int EXIT = 0;
+    private static Scanner in = new Scanner(System.in);
+    public static void main(String[] args) {
+        Vector<Warning> warnings = null;
+        int type = 1;
+        while (type != EXIT) {
+            System.out.println();
+            System.out.println();
+            System.out.println("\t " + JCCHandler.CHECK_TYPE_NAMING + ". Check naming convention.");
+            System.out.println("\t " + JCCHandler.CHECK_TYPE_COMMENT + ". Check comment convention.");
+            System.out.println("\t " + JCCHandler.CHECK_TYPE_INDENT + ". Check indent convention.");
+            System.out.println("\t 0. Exit.");
+            System.out.print("\tWhat do you want?");
+            type = in.nextInt();
+            InputStream inputStream = JCCHandler.class.getResourceAsStream("input.txt");
+            JCCHandler jccHandler = new JCCHandler(inputStream);
+            warnings = jccHandler.check(inputStream, type);
+            for (int i = 0; i < warnings.size(); i++) {
+                System.out.println(warnings.elementAt(i).toString());
+            }
         }
-        if (type == NOTNEWLINE) {
-            result = "At line " + pos.beginLine + ": Should not go to a new line";
-            return result;
+    }
+    private IChecker checker;
+    private CommentChecker commentChecker;
+    private IndentChecker indentChecker;
+    private NamingChecker namingChecker;
+    public JCCHandler(InputStream stream) {
+        namingChecker = new NamingChecker(stream);
+        commentChecker = new CommentChecker(stream);
+        indentChecker = new IndentChecker(stream);
+    }
+    public Vector<Warning> check(InputStream is, int type) {
+        switch (type) {
+        case CHECK_TYPE_COMMENT:
+            checker = commentChecker;
+            break;
+        case CHECK_TYPE_INDENT:
+            checker = indentChecker;
+            break;
+        case CHECK_TYPE_NAMING:
+            checker = namingChecker;
+            break;
+        default:
+            return warnings;
         }
-        if (type == INNERCOMMNET) {
-            result = "At line " + pos.beginLine + ": Comment should not be inside statement";
-            return result;
+        try {
+            checker.ReInit(is);
+            checker.resetVariables();
+            checker.CompilationUnit();
+            warnings = checker.getWarnings();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return warnings;
         }
-        if (type == SPACE) {
-            result = "At line " + pos.beginLine + ", column" + pos.beginColumn + "': Number of spaces should be " + args[0] + "";
-            return result;
-        }
-        if (type == NOTNEWLINE) {
-            result = "Warning: Line " + pos.beginLine + ": Should not go to a new line.\n";
-            return result;
-        }
-        if (type == INNERCOMMNET) {
-            result = "Warning: Line " + pos.beginLine + ": Comment should not be inside statement.\n";
-            return result;
-        }
-        if (type == SPACE) {
-            result = "Warning: Line " + pos.beginLine + ", column" + pos.beginColumn + "': Number of spaces should be " + args[0] + ".\n";
-            return result;
-        }
-        return "";
+        return warnings;
     }
 }

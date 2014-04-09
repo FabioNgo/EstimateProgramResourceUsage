@@ -54,7 +54,6 @@ public class IndentChecker implements IChecker
 {
   boolean chkIndent = true;
    int l = 0;
-   Stack< Integer > switchStack = new Stack<Integer >();
    boolean inSwitch = false;
     Vector<Warning > warnings = new Vector<Warning >();
      char separator = 1;
@@ -164,7 +163,6 @@ public class IndentChecker implements IChecker
 
    public void resetVariables()   {	warnings.clear();
 	chkIndent = true;
-	switchStack.clear();
 	inSwitch = false;
 	l = 0; // l is level of braces
     separator = 1;
@@ -2431,7 +2429,7 @@ void IfStatement():
 {
     "if" SpaChk(" ") "(" SpaChk("") 
 Expression() SpaChk("") ")" 
-(LOOKAHEAD((<SPACES>)* "{") ( Block() ) | ({l++;} OutNewLine("")  Statement() ) 
+(LOOKAHEAD((<SPACES>)* "{") ( Block() ) | ({l++;} OutNewLine("") Statement() ) 
 )//SpaChk(" ")
 (
     LOOKAHEAD("else")
@@ -2440,7 +2438,7 @@ Expression() SpaChk("") ")"
         LOOKAHEAD((< SPACES >)* "{")
         Block()
         |
-        (OutNewLine("") Statement())
+        ({l++;} OutNewLine("") {l--;} Statement())
     )
     |
     Out("")
@@ -2466,26 +2464,17 @@ void DoStatement():
   "do" Statement() "while" "(" Expression() ")" SpaChk("") ";" OutNewLine(";")
 }
 
-void ForStatement():
-{inFor = true;}
+void ForStatement() :
+{}
 {
-  "for" SpaChk(" ") "("
-
-  (
-      LOOKAHEAD(Modifiers() Type() (< SPACES >)* <IDENTIFIER> (<SPACES >)* ":")
-      Modifiers() Type() SpaChk(" ") <IDENTIFIER> ":" Expression()
-    |
-     [ ForInit() ] ";" SpaChk(" ") [ Expression() ] SpaChk("") ";" SpaChk(" ") [ ForUpdate() ]
-  )
-
-  ")"
-  (
-    LOOKAHEAD((< SPACES >)* "{")
+  "for" SpaChk(" ") "(" SpaChk("") [ ForInit() ] ";" SpaChk(" ") [ Expression() ] ";" SpaChk(" ") [ ForUpdate() ] SpaChk("") ")"
+ (    LOOKAHEAD((< SPACES >)* "{")
+  Statement()
+|
+    {l++;}    OutNewLine(")")
+    {l--;}
     Statement()
-  |
-    {l++;} OutNewLine(")")  Statement()
-  )
-  {inFor = false;}
+)
 }
 
 void ForInit():
