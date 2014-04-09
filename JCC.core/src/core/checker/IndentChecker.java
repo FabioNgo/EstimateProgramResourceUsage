@@ -568,7 +568,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       }
       jj_consume_token(SEMICOLON);
       if (jj_2_3(2147483647)) {
-        Out("");
+        OutNewLine("");
       } else {
         OutNewLine("\u005cn");
       }
@@ -2717,7 +2717,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
         }
         SpaChk("");
         jj_consume_token(COMMA);
-        SpaChk("_ ");
+        SpaChk(" ");
       }
     } else {
       Out("");
@@ -4937,6 +4937,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
   }
 
   private boolean jj_3_3() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
+    }
     if (jj_scan_token(IMPORT)) return true;
     return false;
   }

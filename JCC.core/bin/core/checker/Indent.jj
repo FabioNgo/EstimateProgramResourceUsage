@@ -1454,7 +1454,7 @@ void ImportDeclaration():
   (
 
      "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
-    (            LOOKAHEAD( "import")                  Out("")
+    (            LOOKAHEAD( (< SPACES >)* "import")                  OutNewLine("")
         |
         (OutNewLine("\n"))
     )
@@ -2244,7 +2244,7 @@ void ArgumentList():
   Expression() 
   (
     LOOKAHEAD((< SPACES >)* ",")
-   ( SpaChk("") "," SpaChk("_ ") )*
+   ( SpaChk("") "," SpaChk(" ") )*
  |
  Out("")
 )
