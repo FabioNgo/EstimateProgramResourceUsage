@@ -4,6 +4,8 @@ public class WarningSpace extends Warning {
 	public static String INDENT = "Indentation";
 	public static String NEWLINE = "Should be go to a new line";
 	public static String NOTNEWLINE = "should not go to a new line";
+	public static String BLANKLINE = "should have a blank line";
+	public static String NOTBLANKLINE = "should not have a blank line";
 	public static String ENDSPACE = "Space at the end of a statement";
 	public static String SPACE = "Space between tokens";
 	public static String COMMENTSPACE = "Space before comment";
@@ -19,6 +21,7 @@ public class WarningSpace extends Warning {
 	public WarningSpace(Position p, String[] args, String type) {
 		super(p, args, Warning.TYPE_SPACE);
 		this.type = type;
+		
 	}
 
 	@Override
@@ -47,14 +50,14 @@ public class WarningSpace extends Warning {
 			return result;
 		}
 		if (type == COMMENTSPACE) {
-			if (args[0] == "1") {
+			if (Integer.valueOf(args[0])== Integer.valueOf(1)) {
 				result = "At line " + pos.beginLine
 						+ ": Should have one space before comment";
 			} else {
 				result = "At line " + pos.beginLine
 						+ ": Should have no space before comment";
-				return result;
 			}
+			return result;
 		}
 		if (type == NEWLINE) {
 			result = "At line " + pos.beginLine + ": Should go to a new line";
@@ -63,6 +66,15 @@ public class WarningSpace extends Warning {
 		if (type == NOTNEWLINE) {
 			result = "At line " + pos.beginLine
 					+ ": Should not go to a new line";
+			return result;
+		}
+		if (type == BLANKLINE) {
+			result = "At line " + pos.beginLine + ": Should have a blank line";
+			return result;
+		}
+		if (type == NOTBLANKLINE) {
+			result = "At line " + pos.beginLine
+					+ ": Should not have blank line";
 			return result;
 		}
 		if (type == INNERCOMMNET) {
@@ -83,12 +95,6 @@ public class WarningSpace extends Warning {
 		if (type == INNERCOMMNET) {
 			result = "Warning: Line " + pos.beginLine
 					+ ": Comment should not be inside statement.\n";
-			return result;
-		}
-		if (type == SPACE) {
-			result = "Warning: Line " + pos.beginLine + ", column"
-					+ pos.beginColumn + "': Number of spaces should be "
-					+ args[0] + ".\n";
 			return result;
 		}
 
