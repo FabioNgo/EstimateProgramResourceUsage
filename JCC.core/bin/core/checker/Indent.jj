@@ -33,12 +33,8 @@ options {
   TOKEN_FACTORY = "MyIndentToken";
   JDK_VERSION = "1.5";
   ERROR_REPORTING = false;
-<<<<<<< HEAD
   //DEBUG_PARSER = true;
   //DEBUG_LOOKAHEAD = true;
-=======
-  DEBUG_LOOKAHEAD = true;
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
   //DEBUG_TOKEN_MANAGER = true;
 }
 
@@ -58,14 +54,9 @@ public class IndentChecker implements IChecker
 {
   boolean chkIndent = true;
    int l = 0;
-<<<<<<< HEAD
    Stack< Integer > switchStack = new Stack<Integer >();
    boolean inSwitch = false;
     Vector<Warning > warnings = new Vector<Warning >();
-=======
-    Vector<Warning > warnings = new Vector<Warning >();
-    Stack<IndentLevel > lvl = new Stack<IndentLevel >();
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
      char separator = 1;
      boolean inDo = false;
      boolean inTry = false;
@@ -170,18 +161,11 @@ public class IndentChecker implements IChecker
    }
 
    
-<<<<<<< HEAD
 
    public void resetVariables()   {	warnings.clear();
 	chkIndent = true;
 	switchStack.clear();
 	inSwitch = false;
-=======
-
-   public void resetVariables()   {	warnings.clear();
-	lvl.clear();
-	chkIndent = true;
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 	l = 0; // l is level of braces
     separator = 1;
     inDo = false;
@@ -348,7 +332,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
 
         String correctIndent = "";
         if (!inWrapLine) {
-            for (int i = 0; i < lvl.peek().lvl; i++) {
+            for (int i = 0; i < l; i++) {
                 correctIndent += "    ";
             }
         } else {
@@ -360,22 +344,13 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                 startSpaces += " ";
             else if (sb.charAt(i) == '\t')
                 startSpaces += "    ";
-<<<<<<< HEAD
             else            {
               break;
             }
-=======
-            else break;
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
         }
         if (!startSpaces.equals(correctIndent) && chkIndent&&!blankLine) {
           
             String[] args = new String[2];
-<<<<<<< HEAD
-=======
-
-//            Out("Warning: line " + currentLine + ": Wrong indentation.");
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
             if (!inWrapLine) {
                 args[0] = "false";
                 args[1] = String.valueOf(correctIndent.length() / 4);
@@ -406,12 +381,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                 if ((sb.charAt(sb.length() - 1) == ' ' || sb
                         .charAt(sb.length() - 1) == '\t')) {
                     String[] args = new String[0];
-<<<<<<< HEAD
                     warnings.add(new WarningSpace(new Position(currentLine,                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
-=======
-                    //Out("a");
-//                    warnings.add(new WarningSpace(new Position(currentLine,//                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
                 }
             }
 
@@ -1457,56 +1427,12 @@ TOKEN :
  * Program structuring syntax follows.
  */
 
-<<<<<<< HEAD
 
 
 void CompilationUnit():
 {}
 {
   
-=======
-void IncIndent(String image, int l):
-{}{
-  {
-   
-    if(l==0)    {
-      lvl.push(new IndentLevel(image,l));    }else    {
-      lvl.push(new IndentLevel(image,lvl.peek().lvl+l));    }
-     Out("+"+lvl.peek()+"\n");
-      }}
-void DecIndent():
-{
-}
-{
-  {
-    lvl.pop();
-    Out("-"+lvl.peek()+"\n");
-  }
-}
-void ChkIndent() :
-{}
-{
-    (
-      
-        LOOKAHEAD((< SPACES >)+)
-           {
-             String a = "\n";
-           int l = lvl.peek().lvl;
-           for(int i=0;i<l;i++) {
-               a+="    ";
-           }
-           SpaChk(a);
-              }
-      |
-      Out("")
-    )
-    
-}
-void CompilationUnit():
-{}
-{
-  IncIndent("start", 0)
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
   SpaChk("")
   
   [LOOKAHEAD(5) PackageDeclaration()]
@@ -1514,21 +1440,13 @@ void CompilationUnit():
   (TypeDeclaration() )+
   ( < "\u001a" > )?
   ( <STUFF_TO_IGNORE: ~[]> )?
-<<<<<<< HEAD
    <EOF>
-=======
-  ChkIndent() <EOF>
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 void PackageDeclaration():
 {}
 {
-<<<<<<< HEAD
   {inCode = true;}   "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
-=======
-  {inCode = true;}  ChkIndent() "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 void ImportDeclaration():
@@ -1537,11 +1455,7 @@ void ImportDeclaration():
   {inCode = true;}
   (
 
-<<<<<<< HEAD
      "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
-=======
-   ChkIndent()  "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
     (            LOOKAHEAD( "import")                  Out("")
         |
         (OutNewLine("\n"))
@@ -1603,11 +1517,7 @@ void TypeDeclaration():
    {inCode = true;} int modifiers;
 }
 {
-<<<<<<< HEAD
   
-=======
-  ChkIndent()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 (      ";"
 |
   modifiers = Modifiers()
@@ -1619,10 +1529,6 @@ void TypeDeclaration():
      AnnotationTypeDeclaration(modifiers)
   )
 )
-<<<<<<< HEAD
-=======
-DecIndent()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 
@@ -1718,19 +1624,11 @@ void TypeBound():
 void ClassOrInterfaceBody(boolean isInterface):
 {}
 {
-<<<<<<< HEAD
    "{" OutNewLine("{")
    ( ClassOrInterfaceBodyDeclaration(isInterface) )*
    "}"
    (     LOOKAHEAD((< SPACES >)* < EOF >)
         (SpaChk(""))
-=======
-  "{" IncIndent("class",1) //OutNewLine("{")
-   (ChkIndent() ClassOrInterfaceBodyDeclaration(isInterface) )*
-   "}"
-   (     LOOKAHEAD( < EOF >)
-        (Out(""))
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
         |
         ( OutNewLine("\n"))
     )
@@ -1749,11 +1647,7 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
         throw new ParseException("An interface cannot have initializers");
   }
 |
-<<<<<<< HEAD
    modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
-=======
-  ChkIndent() modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
               // more checks, pass the modifiers down to the member
   (
       ClassOrInterfaceDeclaration(modifiers)
@@ -1832,11 +1726,7 @@ void ArrayInitializer():
 void MethodDeclaration(int modifiers):
 {}
 {
-<<<<<<< HEAD
   
-=======
-  ChkIndent()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
   // Modifiers already matched in the caller!
   [ TypeParameters() ]
   ResultType() SpaChk(" ")
@@ -1851,11 +1741,7 @@ void MethodDeclaration(int modifiers):
     LOOKAHEAD((< SPACES >)* ";")
     SpaChk("")  ";"
   | 
-<<<<<<< HEAD
      Block() 
-=======
-    IncIndent("method",1) Block() 
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
     )
 }
 
@@ -1897,11 +1783,7 @@ void ConstructorDeclaration():
 |
   SpaChk(" ")
   )
-<<<<<<< HEAD
     "{"  OutNewLine("{")
-=======
-    "{" IncIndent("constructor",1) OutNewLine("{")
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
     (  BlockStatement() )*
   "}" OutNewLine("}")
@@ -1917,11 +1799,7 @@ void ExplicitConstructorInvocation():
 void Initializer():
 {}
 {
-<<<<<<< HEAD
    [ "static" ]  Block()
-=======
-   [ "static" ] IncIndent("initializer",1) Block()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 
@@ -2413,21 +2291,13 @@ void Statement():
 |
     AssertStatement()
 |
-<<<<<<< HEAD
     Block()
-=======
-  LOOKAHEAD(Block()) IncIndent("statement",1) Block()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 |
     
   EmptyStatement()
 |
   
-<<<<<<< HEAD
   StatementExpression() SpaChk("") ";" OutNewLine(";")
-=======
-  StatementExpression() SpaChk("") ";" //OutNewLine(";")
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 |
     
   SwitchStatement()
@@ -2465,28 +2335,17 @@ void AssertStatement():
 void LabeledStatement():
 {}
 {
-<<<<<<< HEAD
   <IDENTIFIER> SpaChk("") ":" OutNewLine(":")
-=======
-  <IDENTIFIER> SpaChk("") ":" //OutNewLine("")
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
   Statement()
 }
 
 void Block():
 {}
 {
-<<<<<<< HEAD
   SpaChk(" ") "{" OutNewLine("{")  
             ( BlockStatement())*
    
      "}" OutNewLine("}") 
-=======
-  SpaChk(" ") "{"  
-           (LOOKAHEAD((< SPACES >)* BlockStatement()) (ChkIndent() BlockStatement()))*
-   
-   DecIndent() ChkIndent() "}" 
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
    
      
 }
@@ -2495,11 +2354,7 @@ void BlockStatement():
 {}
 {
   LOOKAHEAD( (< SPACES >)* Modifiers() (< SPACES >)* Type() (< SPACES >)* <IDENTIFIER> )
-<<<<<<< HEAD
    LocalVariableDeclaration()  ";" OutNewLine(";") 
-=======
-   LocalVariableDeclaration()  ";" //OutNewLine(";") 
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 |
   Statement()
 |
@@ -2509,22 +2364,14 @@ void BlockStatement():
 void LocalVariableDeclaration():
 {}
 {
-<<<<<<< HEAD
    Modifiers() Type() SpaChk(" ")  VariableDeclarator() SpaChk("")  
-=======
-  ChkIndent() Modifiers() Type() SpaChk(" ")  VariableDeclarator() SpaChk("")  
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
   ( "," SpaChk(" ") VariableDeclarator() SpaChk("") )* 
 }
 
 void EmptyStatement():
 {}
 {
-<<<<<<< HEAD
   ";" 
-=======
-  ";" //OutNewLine(";")
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 void StatementExpression():
@@ -2553,7 +2400,6 @@ Out("")
 
 void SwitchStatement():
 {
-<<<<<<< HEAD
   int temp = l;
   inSwitch = true;
 }
@@ -2562,26 +2408,15 @@ void SwitchStatement():
   
   "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ")  "{"  OutNewLine("{")
      (SwitchLabel() (BlockStatement())* )* "}" OutNewLine("}") 
-=======
-    //{inSwitch = true;}
-  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ")  "{" IncIndent("switch",1)  
-      (SwitchLabel() ( BlockStatement() )* DecIndent() )* "}"  //OutNewLine("}") 
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 void SwitchLabel():
 {}
 {
 (
-<<<<<<< HEAD
     "case" {l++;} SpaChk(" ")  Expression() SpaChk(" ") ":"
 |
   "default" {l++;}  SpaChk(" ") ":"
-=======
-   ChkIndent() "case" IncIndent("case",1) SpaChk(" ")  Expression() SpaChk(" ") ":" 
-|
-  "default" IncIndent("default",1)  SpaChk(" ") ":"
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 )
 OutNewLine("")
 }
@@ -2596,27 +2431,16 @@ void IfStatement():
 {
     "if" SpaChk(" ") "(" SpaChk("") 
 Expression() SpaChk("") ")" 
-<<<<<<< HEAD
 (LOOKAHEAD((<SPACES>)* "{") ( Block() ) | ({l++;} OutNewLine("")  Statement() ) 
 )//SpaChk(" ")
-=======
-(LOOKAHEAD((<SPACES>)* "{") ( IncIndent("if",1) Block()) | (IncIndent("if",1) OutNewLine("")  Statement() DecIndent())) 
-//Out(getToken(0).image)
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 (
     LOOKAHEAD("else")
     "else"
     (
-<<<<<<< HEAD
         LOOKAHEAD((< SPACES >)* "{")
         Block()
         |
         (OutNewLine("") Statement())
-=======
-        LOOKAHEAD((< SPACES >)* "{") IncIndent("else",1) Block()
-        |
-        Statement()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
     )
     |
     Out("")
@@ -2639,7 +2463,7 @@ void WhileStatement():
 void DoStatement():
 {}
 {
-  "do" Statement() "while" "(" Expression() ")" SpaChk("") ";" //OutNewLine(";")
+  "do" Statement() "while" "(" Expression() ")" SpaChk("") ";" OutNewLine(";")
 }
 
 void ForStatement():
@@ -2659,11 +2483,7 @@ void ForStatement():
     LOOKAHEAD((< SPACES >)* "{")
     Statement()
   |
-<<<<<<< HEAD
     {l++;} OutNewLine(")")  Statement()
-=======
-    IncIndent("for",1) OutNewLine(")") Statement()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
   )
   {inFor = false;}
 }
@@ -2730,11 +2550,7 @@ void ThrowStatement():
 void SynchronizedStatement():
 {}
 {
-<<<<<<< HEAD
   "synchronized" "(" Expression() ")"  Block()
-=======
-  "synchronized" "(" Expression() ")" IncIndent("syncStatememt",1) Block()
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 void TryStatement():
@@ -2744,15 +2560,9 @@ void TryStatement():
  */
 {inTry = true;}
 {
-<<<<<<< HEAD
   "try"  Block() 
   ( "catch" SpaChk(" ") "("  SpaChk("") FormalParameter() SpaChk("") ")"  Block() )*
   [ "finally"  Block() ]
-=======
-  "try" IncIndent("try",1) Block()
-  ( "catch" SpaChk(" ") "("  SpaChk("") FormalParameter() SpaChk("") ")"  IncIndent("catch",1) Block() )*
-  [ "finally" IncIndent("finally",1) Block() ]
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 /* We use productions to match >>>, >> and > so that we can keep the
@@ -2895,7 +2705,6 @@ void FirstLine(String s) :
 {String a = "\n";
 }
 {
-<<<<<<< HEAD
   (LOOKAHEAD((< SPACES >)* ("else")){l--;}|Out(""))
   (LOOKAHEAD((< SPACES >)* ("case"|"default")){l--;}|Out(""))  (LOOKAHEAD((< SPACES >)* ("}")){l--;}|Out(""))
   {
@@ -2908,20 +2717,6 @@ void FirstLine(String s) :
            a+="    ";
        }
        SpaChk(a);  }          
-=======
-  
-   }
-{
-  {
-    if(s.compareTo("\n") ==0)    {
-      String a = "\n\n";
-       int l = lvl.peek().lvl;
-       for(int i=0;i<l;i++) {
-           a+="    ";
-       }
-       SpaChk(a);
-       chkIndent = false;    }  }          
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 }
 
 void OutNewLine(String s) :

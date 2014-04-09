@@ -2,12 +2,9 @@ package core;
 
 import core.checker.*;
 
-<<<<<<< HEAD
 import java.io.FileInputStream;
 
 import java.io.FileNotFoundException;
-=======
->>>>>>> f311ce0d79522341ec8f118301b209affa207332
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Vector;
@@ -16,6 +13,8 @@ public class JCCHandler {
 	final public static int CHECK_TYPE_COMMENT = 2;
 	final public static int CHECK_TYPE_INDENT = 1;
 	final public static int CHECK_TYPE_NAMING = 3;
+
+	public Vector<Warning> warnings;
 
 	final static int EXIT = 0;
 
@@ -52,9 +51,8 @@ public class JCCHandler {
 	private IChecker checker;
 	private CommentChecker commentChecker;
 	private IndentChecker indentChecker;
-	private NamingChecker namingChecker;
 
-	public Vector<Warning> warnings;
+	private NamingChecker namingChecker;
 
 	public JCCHandler(InputStream stream) {
 		namingChecker = new NamingChecker(stream);
