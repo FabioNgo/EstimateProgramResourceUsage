@@ -33,6 +33,7 @@ options {
   TOKEN_FACTORY = "MyIndentToken";
   JDK_VERSION = "1.5";
   ERROR_REPORTING = false;
+  //DEBUG_PARSER = true;
   //DEBUG_LOOKAHEAD = true;
   //DEBUG_TOKEN_MANAGER = true;
 }
@@ -42,6 +43,7 @@ PARSER_BEGIN(IndentChecker)
 package core.checker;
 import java.io.*;
 import java.util.Vector;
+import java.util.Stack;
 
 
 /**
@@ -50,11 +52,15 @@ import java.util.Vector;
  */
 public class IndentChecker implements IChecker
 {
+  boolean chkIndent = true;
    int l = 0;
-    Vector<Warning > warnings;
+   Stack< Integer > switchStack = new Stack<Integer >();
+   boolean inSwitch = false;
+    Vector<Warning > warnings = new Vector<Warning >();
      char separator = 1;
      boolean inDo = false;
      boolean inTry = false;
+     boolean inFor = false;
      Token otherToken = null;
      Token firstSpaces = null;
      Token lastSpaces = null;
@@ -156,7 +162,10 @@ public class IndentChecker implements IChecker
 
    
 
-   public void resetVariables()   {	warnings = new Vector<Warning >();
+   public void resetVariables()   {	warnings.clear();
+	chkIndent = true;
+	switchStack.clear();
+	inSwitch = false;
 	l = 0; // l is level of braces
     separator = 1;
     inDo = false;
@@ -281,11 +290,9 @@ void SpaChk(String correctSpaces) :
             
           )*
         {
-//            if(correctSpaces.contains("_")){//                //                StringBuilder sb = new StringBuilder(correctSpaces);//                sb.deleteCharAt(0);//                correctSpaces = sb.toString();//                if(getToken(1).beginColumn>70&&!inLongLine){//                    Out("Warning: line "+getToken(1).beginLine+" too long\n");//                    inLongLine = true;//                    //                }//                if(correctSpaces.contains("\n")) inLongLine = false;//                if(comparedString.contains("\n")) inWrapLine = true;//                else inWrapLine = false;//            }else{//                inWrapLine = false;//            }
         
         if(firstSpaces != null)
         {
-            //Out(firstSpaces+ String.valueOf(firstSpaces.beginLine) +"|");
 	        comparedSpaceProcess(comparedString, correctSpaces,
 	                            firstSpaces.beginLine, firstSpaces.beginColumn
 	                            );
@@ -295,7 +302,6 @@ void SpaChk(String correctSpaces) :
           if(correctSpaces.equals("")){
 	            
 	        }else{
-	           //Out("asd");
 	            comparedSpaceProcess("", correctSpaces,getToken(1).beginLine,getToken(1).beginColumn);
 	        }
         }
@@ -317,6 +323,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
             }
         }
         if (noOfComment > 1) {
+          Out(""+noOfComment+" ");
             String[] args = new String[0];
             warnings.add(new WarningSpace(new Position(currentLine,
                     currentLine, -1, -1), args, WarningSpace.SINGLELINECOMMENT));
@@ -329,51 +336,30 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                 correctIndent += "    ";
             }
         } else {
-            // //Out("asdas");
-            // Stack temp = wrapLvl.get();
-            // for(int i=0;i<temp.endCol+temp.addition;i++){
-            // correctIndent+=" ";
-            // }
         }
-        // if(!inWrapLine){
         String startSpaces = "";
+        boolean blankLine = false;
         for (int i = 0; i < sb.length(); i++) {
             if (sb.charAt(i) == ' ')
                 startSpaces += " ";
-            else
-                break;
+            else if (sb.charAt(i) == '\t')
+                startSpaces += "    ";
+            else            {
+              break;
+            }
         }
-        if (!startSpaces.equals(correctIndent) && chkIndent) {
+        if (!startSpaces.equals(correctIndent) && chkIndent&&!blankLine) {
+          
             String[] args = new String[2];
-
-            Out("Warning: line " + currentLine + ": Wrong indentation.");
             if (!inWrapLine) {
                 args[0] = "false";
                 args[1] = String.valueOf(correctIndent.length() / 4);
                 warnings.add(new WarningSpace(new Position(currentLine,
                         currentLine, -1, -1), args, WarningSpace.INDENT));
             } else {
-                // if(wrapLvl.get().addition==0){
-                // Out(" The correct one is below and right after '"
-                // +wrapLvl.get().image
-                // +"' at line "
-                // +(wrapLvl.get().line)+"\n"
-                // );
-                // }else{
-                // Out(" The correct one is below '"
-                // +wrapLvl.get().image
-                // +"' at line "
-                // +(wrapLvl.get().line)
-                // +" and more "
-                // +wrapLvl.get().addition
-                // + " spaces\n"
-                // );
-                // }
-
             }
 
         }
-        // }
         if (subline != 0) {
             for (int i = 0; i < sb.length();) {
                 if (sb.charAt(i) == ' ')
@@ -393,10 +379,9 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
             // space at the end of line
             if (endOfLine) {
                 if ((sb.charAt(sb.length() - 1) == ' ' || sb
-                        .charAt(sb.length() - 1) == '\u005ct')) {
+                        .charAt(sb.length() - 1) == '\t')) {
                     String[] args = new String[0];
-                    warnings.add(new WarningSpace(new Position(currentLine,
-                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
+                    warnings.add(new WarningSpace(new Position(currentLine,                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
                 }
             }
 
@@ -486,7 +471,6 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
             sublines++;
         }
         // new line checking
-        // lnNotConsidered =
         if (comparedSpaces.length > 0) {
             for (int i = 1; i < comparedSpaces.length; i++) {
                 if (comparedSpaces[i].contains(Character.toString(separator))) {
@@ -495,7 +479,6 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
             }
             if (!inCode)
                 lnNotConsidered++;
-            // if(comparedSpaces)
             if (comparedSpaces.length - lnNotConsidered < correctSpaces.length) {
                 String[] args = new String[0];
                 warnings.add(new WarningSpace(new Position(beginLine,
@@ -1444,22 +1427,26 @@ TOKEN :
  * Program structuring syntax follows.
  */
 
+
+
 void CompilationUnit():
 {}
 {
+  
   SpaChk("")
-  [LOOKAHEAD(4) PackageDeclaration()]
+  
+  [LOOKAHEAD(5) PackageDeclaration()]
   ImportDeclaration()
   (TypeDeclaration() )+
   ( < "\u001a" > )?
   ( <STUFF_TO_IGNORE: ~[]> )?
-  <EOF>
+   <EOF>
 }
 
 void PackageDeclaration():
 {}
 {
-  {inCode = true;}  Modifiers() "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
+  {inCode = true;}   "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
 }
 
 void ImportDeclaration():
@@ -1468,9 +1455,8 @@ void ImportDeclaration():
   {inCode = true;}
   (
 
-    "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
-    (            LOOKAHEAD((< SPACES >)* "import")
-        ( OutNewLine(";"))
+     "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
+    (            LOOKAHEAD( "import")                  Out("")
         |
         (OutNewLine("\n"))
     )
@@ -1531,7 +1517,8 @@ void TypeDeclaration():
    {inCode = true;} int modifiers;
 }
 {
-  ";"
+  
+(      ";"
 |
   modifiers = Modifiers()
   (
@@ -1541,6 +1528,7 @@ void TypeDeclaration():
    |
      AnnotationTypeDeclaration(modifiers)
   )
+)
 }
 
 
@@ -1636,11 +1624,11 @@ void TypeBound():
 void ClassOrInterfaceBody(boolean isInterface):
 {}
 {
-  "{" {l++;} OutNewLine("{")
+   "{" OutNewLine("{")
    ( ClassOrInterfaceBodyDeclaration(isInterface) )*
    "}"
    (     LOOKAHEAD((< SPACES >)* < EOF >)
-        (OutNewLine("}"))
+        (SpaChk(""))
         |
         ( OutNewLine("\n"))
     )
@@ -1652,14 +1640,14 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
    int modifiers;
 }
 {
-  LOOKAHEAD(3)
+  (    LOOKAHEAD(4)
   Initializer()
   {
      if (isInterface)
         throw new ParseException("An interface cannot have initializers");
   }
 |
-  modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
+   modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
               // more checks, pass the modifiers down to the member
   (
       ClassOrInterfaceDeclaration(modifiers)
@@ -1681,6 +1669,7 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
   )
 |
   ";"
+)
 }
 void FieldDeclaration(int modifiers):
 {}
@@ -1737,6 +1726,7 @@ void ArrayInitializer():
 void MethodDeclaration(int modifiers):
 {}
 {
+  
   // Modifiers already matched in the caller!
   [ TypeParameters() ]
   ResultType() SpaChk(" ")
@@ -1747,7 +1737,12 @@ void MethodDeclaration(int modifiers):
 |
   Out("")
   )
-  ( Block() | SpaChk("")  ";" OutNewLine(";") )
+  (
+    LOOKAHEAD((< SPACES >)* ";")
+    SpaChk("")  ";"
+  | 
+     Block() 
+    )
 }
 
 void MethodDeclarator():
@@ -1788,7 +1783,7 @@ void ConstructorDeclaration():
 |
   SpaChk(" ")
   )
-    "{" {l++;} OutNewLine("{")
+    "{"  OutNewLine("{")
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
     (  BlockStatement() )*
   "}" OutNewLine("}")
@@ -1804,7 +1799,7 @@ void ExplicitConstructorInvocation():
 void Initializer():
 {}
 {
-  [ "static" ] Block()
+   [ "static" ]  Block()
 }
 
 
@@ -1932,7 +1927,6 @@ void Expression() :
  */
 {}
 {
-    //Out("fabio")
   ConditionalExpression()
 (
     LOOKAHEAD((<SPACES>)*<ASIGN_OPERATOR>)   
@@ -2061,7 +2055,6 @@ void ShiftExpression() :
   AdditiveExpression() 
  ( 
     LOOKAHEAD((<SPACES>)* ("<<"|">>"|">>>") ) 
-    //Out(getToken(0).image)
      SpaChk(" ") ("<<"|">>"|">>>") SpaChk(" ")  AdditiveExpression())*  
 }
 //
@@ -2152,7 +2145,6 @@ void CastExpression() :
 void PrimaryExpression() :
 {}
 {
-    //Out("asd")
   PrimaryPrefix()  ( LOOKAHEAD(2) PrimarySuffix() )* 
 }
 
@@ -2184,7 +2176,7 @@ void PrimaryPrefix():
   AllocationExpression()
 |
   LOOKAHEAD( ResultType() (< SPACES >)* "." (< SPACES >)* "class" )
-  ResultType() SpaChk("") "." SpaChk("") "class" 
+  ResultType() SpaChk("") "." SpaChk("") "class" SpaChk("")
 |
   (Name())+
 }
@@ -2244,8 +2236,8 @@ void NullLiteral():
 void Arguments():
 {}
 {
-  SpaChk("") "(" //insert(" ")
-  SpaChk("") ( ArgumentList() )* SpaChk("")  ")" //remove()
+  SpaChk("") "("
+  SpaChk("") ( ArgumentList() )* SpaChk("")  ")"
 }
 
 void ArgumentList():
@@ -2293,21 +2285,27 @@ void ArrayDimsAndInits():
 void Statement():
 {}
 {
-  LOOKAHEAD(< IDENTIFIER > (< SPACES >)* ":")
-  LabeledStatement()
+(  
+  LOOKAHEAD((< SPACES >)* LabeledStatement())
+   LabeledStatement()
 |
-  AssertStatement()
+    AssertStatement()
 |
-  Block()
+    Block()
 |
+    
   EmptyStatement()
 |
+  
   StatementExpression() SpaChk("") ";" OutNewLine(";")
 |
+    
   SwitchStatement()
 |
+    
   IfStatement()
 |
+
   WhileStatement()
 |
   DoStatement()
@@ -2320,11 +2318,12 @@ void Statement():
 |
   ReturnStatement()
 |
-  ThrowStatement()
+   ThrowStatement()
 |
-  SynchronizedStatement()
+   SynchronizedStatement()
 |
   TryStatement()
+)
 }
 
 void AssertStatement():
@@ -2336,21 +2335,25 @@ void AssertStatement():
 void LabeledStatement():
 {}
 {
-  <IDENTIFIER> SpaChk("") ":" OutNewLine("") Statement()
+  <IDENTIFIER> SpaChk("") ":" OutNewLine(":")
+  Statement()
 }
 
 void Block():
 {}
 {
-  SpaChk(" ") "{" {l++;} OutNewLine("{")
-   ( BlockStatement() )*
-    "}" OutNewLine("}")
+  SpaChk(" ") "{" OutNewLine("{")  
+            ( BlockStatement())*
+   
+     "}" OutNewLine("}") 
+   
+     
 }
 
 void BlockStatement():
 {}
 {
-  LOOKAHEAD( Modifiers() (< SPACES >)* Type() (< SPACES >)* <IDENTIFIER> )
+  LOOKAHEAD( (< SPACES >)* Modifiers() (< SPACES >)* Type() (< SPACES >)* <IDENTIFIER> )
    LocalVariableDeclaration()  ";" OutNewLine(";") 
 |
   Statement()
@@ -2361,14 +2364,14 @@ void BlockStatement():
 void LocalVariableDeclaration():
 {}
 {
-  Modifiers() Type() SpaChk(" ")  VariableDeclarator() SpaChk("")  
+   Modifiers() Type() SpaChk(" ")  VariableDeclarator() SpaChk("")  
   ( "," SpaChk(" ") VariableDeclarator() SpaChk("") )* 
 }
 
 void EmptyStatement():
 {}
 {
-  ";" OutNewLine(";")
+  ";" 
 }
 
 void StatementExpression():
@@ -2396,20 +2399,24 @@ Out("")
 }
 
 void SwitchStatement():
-{}
 {
-    //{inSwitch = true;}
-  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ") {l++;} "{"  OutNewLine("{")
-   (SwitchLabel() {l++;} ( BlockStatement() )* {l--;} )* "}"  OutNewLine("}") 
+  int temp = l;
+  inSwitch = true;
+}
+{
+  
+  
+  "switch" SpaChk(" ") "(" SpaChk("") Expression() SpaChk("") ")" SpaChk(" ")  "{"  OutNewLine("{")
+     (SwitchLabel() (BlockStatement())* )* "}" OutNewLine("}") 
 }
 
 void SwitchLabel():
 {}
 {
 (
-  "case" SpaChk(" ")  Expression() SpaChk(" ") ":"
+    "case" {l++;} SpaChk(" ")  Expression() SpaChk(" ") ":"
 |
-  "default" SpaChk(" ") ":"
+  "default" {l++;}  SpaChk(" ") ":"
 )
 OutNewLine("")
 }
@@ -2424,19 +2431,21 @@ void IfStatement():
 {
     "if" SpaChk(" ") "(" SpaChk("") 
 Expression() SpaChk("") ")" 
-(LOOKAHEAD((<SPACES>)* "{") ( Block()) | ({l++;}OutNewLine("") {l--;} Statement())) 
-//Out(getToken(0).image)
+(LOOKAHEAD((<SPACES>)* "{") ( Block() ) | ({l++;} OutNewLine("")  Statement() ) 
+)//SpaChk(" ")
 (
     LOOKAHEAD("else")
     "else"
     (
-        LOOKAHEAD((< SPACES >)* "{") Block()
+        LOOKAHEAD((< SPACES >)* "{")
+        Block()
         |
-        SpaChk(" ") Statement()
+        (OutNewLine("") Statement())
     )
     |
     Out("")
-) 
+)
+  
 }
 
 void WhileStatement():
@@ -2458,7 +2467,7 @@ void DoStatement():
 }
 
 void ForStatement():
-{}
+{inFor = true;}
 {
   "for" SpaChk(" ") "("
 
@@ -2474,9 +2483,9 @@ void ForStatement():
     LOOKAHEAD((< SPACES >)* "{")
     Statement()
   |
-    {l++;} OutNewLine(")") Statement()
+    {l++;} OutNewLine(")")  Statement()
   )
-  
+  {inFor = false;}
 }
 
 void ForInit():
@@ -2541,7 +2550,7 @@ void ThrowStatement():
 void SynchronizedStatement():
 {}
 {
-  "synchronized" "(" Expression() ")" Block()
+  "synchronized" "(" Expression() ")"  Block()
 }
 
 void TryStatement():
@@ -2551,7 +2560,7 @@ void TryStatement():
  */
 {inTry = true;}
 {
-  "try"  Block()
+  "try"  Block() 
   ( "catch" SpaChk(" ") "("  SpaChk("") FormalParameter() SpaChk("") ")"  Block() )*
   [ "finally"  Block() ]
 }
@@ -2693,34 +2702,21 @@ void OutWhiteLine():
 }
 
 void FirstLine(String s) :
+{String a = "\n";
+}
 {
-    String indent ="\n";
-  
-   }
-{
-    //Out("Asd")
-    
-    LOOKAHEAD((<SPACES>)* "}")
-  	 {
-//  	 if(s.compareTo("{") == 0)//	  {//	    indent = "";//	  } 
-  	 l--; 
-  	 SpaChk(indent); 
-  	 }
-|
-    LOOKAHEAD((<SPACES>)* ("case"|"default"))
-    {
-        //Out(getToken(1).image+"\n");
-        l--;
-        SpaChk(indent);
-        l++;
-    }
-|
- 	{
- 	  
-		for (int i = 0; i < l; i++) indent= indent.concat("    ");
-			if(s.equals("\n")) indent= indent.concat("\n");
-	}  SpaChk(indent) 
-
+  (LOOKAHEAD((< SPACES >)* ("else")){l--;}|Out(""))
+  (LOOKAHEAD((< SPACES >)* ("case"|"default")){l--;}|Out(""))  (LOOKAHEAD((< SPACES >)* ("}")){l--;}|Out(""))
+  {
+    if(s.compareTo("\n") ==0)    {
+      a += "\n";    }
+    if(s.compareTo("{") == 0)    {
+      l++;    }
+        
+       for(int i=0;i<l;i++) {
+           a+="    ";
+       }
+       SpaChk(a);  }          
 }
 
 void OutNewLine(String s) :
@@ -2728,7 +2724,7 @@ void OutNewLine(String s) :
 {
 
   LOOKAHEAD((<SPACES>)* "else")
-  /*Out(s)*/ {if (s.equals("}")) SpaChk(" "); else {FirstLine(s);} }
+  /*Out(s)*/ {if (s.equals("}")){ SpaChk(" ");} else {FirstLine(s);} }
 |
 LOOKAHEAD((<SPACES>)*"while")
 /*Out(s)*/  {

@@ -1,8 +1,8 @@
 package core;
 
-import java.io.FileInputStream;
-
 import core.checker.*;
+
+import java.io.FileInputStream;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -37,8 +37,9 @@ public class JCCHandler {
 			System.out.print("\tWhat do you want?");
 			type = in.nextInt();
 
-			InputStream inputStream = JCCHandler.class.getResourceAsStream("input.txt");
-			
+			InputStream inputStream = JCCHandler.class
+					.getResourceAsStream("input.txt");
+
 			JCCHandler jccHandler = new JCCHandler(inputStream);
 			warnings = jccHandler.check(inputStream, type);
 			for (int i = 0; i < warnings.size(); i++) {

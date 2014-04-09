@@ -7,7 +7,7 @@ public class WarningComment extends Warning {
 	 * args[1] = name
 	 */
 	
-	public static String BEGIN = "Beginning of the file";
+	public static String BEGIN = "beginning of the file";
 	public static String CLASS = "Class";
 	public static String INTERFACE = "Interface";
 	public static String ENUM = "Enum";
@@ -15,6 +15,7 @@ public class WarningComment extends Warning {
 	public static String VARIABLE = "Variable";
 	public static String CONSTANT = "Constant";
 	public static String METHOD = "Method";
+	public static String CONSTRUCTOR ="Constructor";
 	
 	public WarningComment() {
 		// TODO Auto-generated constructor stub

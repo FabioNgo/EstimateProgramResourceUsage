@@ -2,6 +2,7 @@
 package core.checker;
 import java.io.*;
 import java.util.Vector;
+import java.util.Stack;
 
 /** Token Manager. */
 public class IndentCheckerTokenManager implements IndentCheckerConstants
