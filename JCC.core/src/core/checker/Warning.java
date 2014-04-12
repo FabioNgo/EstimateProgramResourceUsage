@@ -5,9 +5,9 @@ public abstract class Warning {
 	static final public int TYPE_SPACE = 2;
 	static final public int TYPE_COMMENT = 3;
 
-	Position pos;
-	String args[];
-	int type;
+	public Position pos;
+	public String args[];
+	public int type;
 
 	public Warning() {
 	}

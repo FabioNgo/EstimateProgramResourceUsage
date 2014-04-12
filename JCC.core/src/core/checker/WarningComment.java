@@ -31,7 +31,8 @@ public class WarningComment extends Warning {
 		StringBuilder s = new StringBuilder("At line " + pos.beginLine + ": ");
 		s.append("Adding/using block comment before " + args[0]);
 		if (!args[0].equals(BEGIN)){
-			s.append(" definition - " + args[1]);
+			s.append(" definition '" + args[1] + "'");
+			
 		}
 		return s.toString();
 	}
