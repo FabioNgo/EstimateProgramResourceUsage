@@ -56,14 +56,15 @@ public class IndentChecker implements IChecker
    int l = 0;
    boolean inSwitch = false;
     Vector<Warning > warnings = new Vector<Warning >();
-     char separator = 1;
+     static final char singleComment = 1;
+     static final char inComment = 3;
      boolean inDo = false;
      boolean inTry = false;
      boolean inFor = false;
      Token otherToken = null;
      Token firstSpaces = null;
      Token lastSpaces = null;
-     char newlineTok = 2;
+     static final char newlineTok = 2;
      boolean endOfLine = false;
      String shouldNewLine ="";
      boolean inLongLine = true;
@@ -161,17 +162,17 @@ public class IndentChecker implements IChecker
 
    
 
-   public void resetVariables()   {	warnings.clear();
-	chkIndent = true;
-	inSwitch = false;
-	l = 0; // l is level of braces
-    separator = 1;
+   public void resetVariables()
+   {
+    warnings.clear();
+    chkIndent = true;
+    inSwitch = false;
+    l = 0; // l is level of braces
     inDo = false;
-	inTry = false;
-	otherToken = null;
+    inTry = false;
+    otherToken = null;
     firstSpaces = null;
     lastSpaces = null;
-    newlineTok = 2;
     endOfLine = false;
     shouldNewLine ="";
     inLongLine = true;
@@ -180,9 +181,9 @@ public class IndentChecker implements IChecker
   }
 
   public Vector<Warning> getWarnings()
-   	{
-		return warnings;
-   	}
+    {
+        return warnings;
+    }
 
   public static void main(String args[]) {
     IndentChecker parser;
@@ -219,12 +220,13 @@ PARSER_END(IndentChecker)
 
 void SpaChk(String correctSpaces) :
 {
-	Token t,t1,t2;
-	String addition="";
-	String comparedString ="";
-	String LongStm="";
-	int noOfComment = 0;
-	firstSpaces = null;
+    Token t;
+    String addition="";
+    String comparedString ="";
+    int noOfComment = 0;
+    int preEndLine = -1;
+    Vector<Integer> lines = new Vector<Integer >();
+    firstSpaces = null;
 }
 {
     (
@@ -239,13 +241,45 @@ void SpaChk(String correctSpaces) :
                     firstSpaces = null;
                 }
                 if(otherToken == null)
-	            {
-	              otherToken = new Token();
-	              otherToken.endColumn=0;
-	            } 
+                {
+                  otherToken = new Token();
+                  otherToken.endColumn=0;
+                } 
             }
             
             t = <SPACES>
+            {
+              //preEndLine = t.endLine;
+              //Store lines of current group of spaces
+              
+              for(int i=t.beginLine+1; ;i++)
+              {
+                //Out(i+" ");
+                if(t.image.endsWith("\n"))
+                {
+                  if(i >t.endLine) break;
+                }else
+                {
+                    if(i >t.endLine-1) break;
+                }
+                
+                if(t.beginColumn!=1)
+                {
+                  
+                    if(lines.size()!=0)
+                    {
+                        if(i != ((Integer)lines.get(lines.size()-1)).intValue())
+                        {
+                           lines.add(new Integer(i));
+                         }       
+                    }else
+                    {
+                      lines.add(new Integer(i));
+                    }
+              }
+              }
+              //Out("|");
+            }
             {
                 if(firstSpaces ==null) {
                     firstSpaces = getToken(0);
@@ -253,7 +287,7 @@ void SpaChk(String correctSpaces) :
                     
                     if(otherToken.endColumn+1 != firstSpaces.beginColumn){ // have comment
                         
-                        comparedString += separator;
+                        comparedString += singleComment;
                     }
                 }
                 
@@ -282,29 +316,29 @@ void SpaChk(String correctSpaces) :
             }
             {
                 
-                comparedString += (t.image+shouldNewLine+separator);
+                comparedString += (t.image+shouldNewLine+singleComment);
                 
             }
             
           )*
         {
-        
+          
         if(firstSpaces != null)
         {
-	        comparedSpaceProcess(comparedString, correctSpaces,
-	                            firstSpaces.beginLine, firstSpaces.beginColumn
-	                            );
+            comparedSpaceProcess(comparedString, correctSpaces,
+                                firstSpaces.beginLine, firstSpaces.beginColumn, lines
+                                );
         }else
         {
           
           if(correctSpaces.equals("")){
-	            
-	        }else{
-	            comparedSpaceProcess("", correctSpaces,getToken(1).beginLine,getToken(1).beginColumn);
-	        }
+
+            }else{
+                comparedSpaceProcess("", correctSpaces,getToken(1).beginLine,getToken(1).beginColumn,lines);
+            }
         }
       }
-	)
+    )
 )
 }
 void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boolean inWrapLine) :
@@ -316,7 +350,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
         // Comment Counting
         int noOfComment = 0;
         for (int i = 0; i < sb.length(); i++) {
-            if (sb.charAt(i) == separator) {
+            if (sb.charAt(i) == singleComment) {
                 noOfComment++;
             }
         }
@@ -342,7 +376,8 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                 startSpaces += " ";
             else if (sb.charAt(i) == '\t')
                 startSpaces += "    ";
-            else            {
+            else
+            {
               break;
             }
         }
@@ -376,10 +411,13 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
             }
             // space at the end of line
             if (endOfLine) {
-                if ((sb.charAt(sb.length() - 1) == ' ' || sb
-                        .charAt(sb.length() - 1) == '\t')) {
+              String temp = sb.toString();
+                if (temp.contains(" ")||temp.contains("\t")) {
+                  if (!temp.contains(String.valueOf(singleComment))) {
                     String[] args = new String[0];
-                    warnings.add(new WarningSpace(new Position(currentLine,                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
+                    warnings.add(new WarningSpace(new Position(currentLine,
+                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
+                  }
                 }
             }
 
@@ -387,7 +425,7 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
         // space before comment
         if (subline == 0) {
             for (int i = 0; i < sb.length(); i++) {
-                if (sb.charAt(i) == separator) {
+                if (sb.charAt(i) == singleComment) {
                     if (inCode) {
 
                         if (i != 1) {
@@ -423,46 +461,64 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                 }
             }
         }
-	}
+    }
 }
-void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine, int beginColumn) :
+void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine, int beginColumn, Vector<Integer > lines) :
 {}
 {
     {
-	    StringBuilder sb = new StringBuilder(comparedSpace);
+        StringBuilder sb = new StringBuilder(comparedSpace);
         int lnNotConsidered = 0;
+        int blankLines = 0;
         boolean chkIndent = false;
         if (sb.length() > 0) {
             sb.deleteCharAt(sb.length() - 1);
         }
         comparedSpace = sb.toString();
         int sublines = 0;
-        if (comparedSpace.contains("\u005cn")) {
+        if (comparedSpace.contains("\n")) {
             endOfLine = true;
         } else {
             endOfLine = false;
         }
-        String[] comparedSpaces = comparedSpace.split("\u005cn", -1);
-        String[] correctSpaces = correctSpace.split("\u005cn", -1);
-        if (comparedSpace.contains("\u005cn")) {
+        String[] comparedSpaces = comparedSpace.split("\n", -1);
+        String[] correctSpaces = correctSpace.split("\n", -1);
+        if (correctSpace.contains("\n")) {
+            
+            blankLines = correctSpaces.length-2;
+            //Out(blankLines+"\n");
         } else {
+            blankLines = 0;
         }
+        int a = 0;
         for (int i = 0; i < comparedSpaces.length; i++) {
-            if (i != 0) {
+            if (i != 0&& correctSpace.contains("\n")) {
                 chkIndent = true;
             } else {
                 chkIndent = false;
             }
-            /*
-             * if(lvlUp&&i==comparedSpaces.length-1){ l--; lvlUp=false; }
-             */
-            if (comparedSpaces[i].contains(String.valueOf(separator))) {
+            if (comparedSpaces[i].contains(String.valueOf(singleComment))) {
                 FormalCheck(comparedSpaces[i], beginLine, sublines, chkIndent,
                         inWrapLine);
             } else {
                 if (i == 0 || i == comparedSpaces.length - 1) {
                     FormalCheck(comparedSpaces[i], beginLine, sublines,
                             chkIndent, inWrapLine);
+                }else
+                {
+                  if(i >blankLines&&a< lines.size())
+                  {
+                    //Out(lines.size()+"|\n");
+                    String[] args = new String[0];
+                    lnNotConsidered++;
+                    warnings.add(new WarningSpace(new Position(lines.get(a),
+                           lines.get(a), -1, -1), args, WarningSpace.NOTBLANKLINE));
+                           a++;
+                  }else
+                  {
+                    a++;
+                  }
+                  
                 }
             }
 
@@ -471,16 +527,25 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
         // new line checking
         if (comparedSpaces.length > 0) {
             for (int i = 1; i < comparedSpaces.length; i++) {
-                if (comparedSpaces[i].contains(Character.toString(separator))) {
+                if (comparedSpaces[i].contains(Character.toString(singleComment))) {
                     lnNotConsidered++;
                 }
             }
             if (!inCode)
                 lnNotConsidered++;
             if (comparedSpaces.length - lnNotConsidered < correctSpaces.length) {
-                String[] args = new String[0];
+                if(blankLines >0)
+                {
+                  String[] args = new String[0];
+                    warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.BLANKLINE));
+                }else
+                {
+                  String[] args = new String[0];
                 warnings.add(new WarningSpace(new Position(beginLine,
                         beginLine, -1, -1), args, WarningSpace.NEWLINE));
+               }
+                
 
             }
             if (inWrapLine)
@@ -492,7 +557,7 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
             }
             if (comparedSpaces.length - lnNotConsidered == correctSpaces.length
                     && !endOfLine) {
-                if (comparedSpaces[0].contains(Character.toString(separator))) {
+                if (comparedSpaces[0].contains(Character.toString(singleComment))) {
                     String[] args = new String[0];
                     warnings.add(new WarningSpace(new Position(beginLine,
                             beginLine, -1, -1), args, WarningSpace.INNERCOMMNET));
@@ -510,7 +575,7 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
 
             }
         }
-	}
+    }
 }
 /* WHITE SPACE */
 
@@ -1444,7 +1509,8 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
-  {inCode = true;}   "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
+  {inCode = true;}
+   "package" SpaChk(" ") (Name())*  ";" OutNewLine("\n")
 }
 
 void ImportDeclaration():
@@ -1454,7 +1520,10 @@ void ImportDeclaration():
   (
 
      "import" SpaChk(" ") [ "static" SpaChk(" ") ] (Name())* SpaChk("") [ "." SpaChk("") "*" ] ";"
-    (            LOOKAHEAD( (< SPACES >)* "import")                  OutNewLine("")
+    (
+      
+      LOOKAHEAD( (< SPACES >)* "import")        
+          OutNewLine("")
         |
         (OutNewLine("\n"))
     )
@@ -1516,7 +1585,9 @@ void TypeDeclaration():
 }
 {
   
-(      ";"
+(
+  
+    ";"
 |
   modifiers = Modifiers()
   (
@@ -1625,9 +1696,13 @@ void ClassOrInterfaceBody(boolean isInterface):
    "{" OutNewLine("{")
    ( ClassOrInterfaceBodyDeclaration(isInterface) )*
    "}"
-   (     LOOKAHEAD((< SPACES >)* < EOF >)
+   (
+     LOOKAHEAD((< SPACES >)* < EOF >)
         (SpaChk(""))
         |
+        LOOKAHEAD((< SPACES >)* "}")
+        OutNewLine("}")
+        | 
         ( OutNewLine("\n"))
     )
 }
@@ -1638,7 +1713,8 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
    int modifiers;
 }
 {
-  (    LOOKAHEAD(4)
+  (
+    LOOKAHEAD(4)
   Initializer()
   {
      if (isInterface)
@@ -1894,11 +1970,11 @@ void Name():
   
     
     <IDENTIFIER> 
-	  ( LOOKAHEAD((< SPACES>)* "." (< SPACES >)* < IDENTIFIER >)
-	  SpaChk("") "." SpaChk("")
-	|
-	    Out("")
-	  )
+      ( LOOKAHEAD((< SPACES>)* "." (< SPACES >)* < IDENTIFIER >)
+      SpaChk("") "." SpaChk("")
+    |
+        Out("")
+      )
   
 }
 
@@ -2283,7 +2359,8 @@ void ArrayDimsAndInits():
 void Statement():
 {}
 {
-(  
+(
+  
   LOOKAHEAD((< SPACES >)* <IDENTIFIER> (<SPACES >)* ":")
    LabeledStatement()
 |
@@ -2341,7 +2418,9 @@ void Block():
 {}
 {
   SpaChk(" ") "{" OutNewLine("{")  
-            ( BlockStatement())*
+   
+     
+    ( BlockStatement())*
    
      "}" OutNewLine("}") 
    
@@ -2429,11 +2508,11 @@ void IfStatement():
 {
     "if" SpaChk(" ") "(" SpaChk("") 
 Expression() SpaChk("") ")" 
-(LOOKAHEAD((<SPACES>)* "{") ( Block() ) | ({l++;} OutNewLine("") Statement() ) 
+(LOOKAHEAD((<SPACES>)* "{") ( Block() ) | ({l++;} OutNewLine(""){l--;}Statement() ) 
 )//SpaChk(" ")
 (
     LOOKAHEAD("else")
-    "else"
+    "else" 
     (
         LOOKAHEAD((< SPACES >)* "{")
         Block()
@@ -2468,10 +2547,12 @@ void ForStatement() :
 {}
 {
   "for" SpaChk(" ") "(" SpaChk("") [ ForInit() ] ";" SpaChk(" ") [ Expression() ] ";" SpaChk(" ") [ ForUpdate() ] SpaChk("") ")"
- (    LOOKAHEAD((< SPACES >)* "{")
+ (
+    LOOKAHEAD((< SPACES >)* "{")
   Statement()
 |
-    {l++;}    OutNewLine(")")
+    {l++;}
+    OutNewLine(")")
     {l--;}
     Statement()
 )
@@ -2694,18 +2775,26 @@ void FirstLine(String s) :
 {String a = "\n";
 }
 {
-  (LOOKAHEAD((< SPACES >)* ("else")){l--;}|Out(""))
-  (LOOKAHEAD((< SPACES >)* ("case"|"default")){l--;}|Out(""))  (LOOKAHEAD((< SPACES >)* ("}")){l--;}|Out(""))
+  //(LOOKAHEAD((< SPACES >)* ("else")){l--;}|Out(""))
+  (LOOKAHEAD((< SPACES >)* ("case"|"default")){l--;}|Out(""))
+  (LOOKAHEAD((< SPACES >)* ("}")){l--;}|Out(""))
   {
-    if(s.compareTo("\n") ==0)    {
-      a += "\n";    }
-    if(s.compareTo("{") == 0)    {
-      l++;    }
+    if(s.compareTo("\n") ==0)
+    {
+      a += "\n";
+    }
+    if(s.compareTo("{") == 0)
+    {
+      l++;
+    }
         
        for(int i=0;i<l;i++) {
            a+="    ";
        }
-       SpaChk(a);  }          
+       SpaChk(a);
+  }
+        
+  
 }
 
 void OutNewLine(String s) :
