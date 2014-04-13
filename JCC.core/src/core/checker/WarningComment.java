@@ -28,7 +28,7 @@ public class WarningComment extends Warning {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		StringBuilder s = new StringBuilder("At line " + pos.beginLine + ": ");
+		StringBuilder s = new StringBuilder("");
 		s.append("Adding/using block comment before " + args[0]);
 		if (!args[0].equals(BEGIN)){
 			s.append(" definition '" + args[1] + "'");

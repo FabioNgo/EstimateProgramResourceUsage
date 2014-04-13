@@ -25,7 +25,7 @@ public class WarningNaming extends Warning {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		StringBuilder s = new StringBuilder("At line " + pos.beginLine + ": ");
+		StringBuilder s = new StringBuilder("");
 		s.append(args[0] + " '" + args[1] + "' should be named as '" + args[2]
 				+ "'\n");
 		s.append("\t" + args[0] + " names should be ");
