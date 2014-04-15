@@ -75,7 +75,9 @@ public class WarningSpace extends Warning {
 			return result;
 		}
 		if (type == SPACE) {
-			result = "Number of spaces should be " + args[0] + "";
+			
+			result = "Col: " + pos.beginColumn + ", " +
+					"Number of spaces should be " + args[0] + "";
 			return result;
 		}
 
