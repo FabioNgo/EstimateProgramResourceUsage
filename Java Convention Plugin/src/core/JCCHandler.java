@@ -79,7 +79,6 @@ public class JCCHandler {
 			checker.CompilationUnit();
 			warnings = checker.getWarnings();
 		} catch (ParseException e) {
-			e.printStackTrace();
 			return warnings;
 		}
 		return warnings;

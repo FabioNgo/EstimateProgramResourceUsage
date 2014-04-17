@@ -2,11 +2,15 @@ package javaConvention.compilationParticipant;
 
 import java.util.Vector;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
+import org.eclipse.jface.text.BadLocationException;
 
 import core.JCCHandler;
 import core.checker.Warning;
@@ -14,6 +18,9 @@ import core.checker.Warning;
 public class JccCompilationParticipant extends CompilationParticipant {
 
 	public static String MARKER_TYPE = IMarker.PROBLEM;
+
+	// private static final String MARKER_ID =
+	// FavoritesPlugin.ID + ".jccmarker";
 
 	private JCCHandler jccHandler = new JCCHandler(System.in);
 
@@ -41,8 +48,6 @@ public class JccCompilationParticipant extends CompilationParticipant {
 
 	@Override
 	public int aboutToBuild(IJavaProject project) {
-		// check(project.getProject());
-		// new ProjectChecker().check();
 		return READY_FOR_BUILD;
 	}
 
@@ -72,9 +77,9 @@ public class JccCompilationParticipant extends CompilationParticipant {
 								.toString());
 						marker.setAttribute(IMarker.LINE_NUMBER,
 								w.elementAt(i).pos.beginLine);
+
 						marker.setAttribute(IMarker.SEVERITY,
 								IMarker.SEVERITY_INFO);
-
 					}
 				} catch (CoreException e) {
 					// TODO Auto-generated catch block

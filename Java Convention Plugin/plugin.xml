@@ -3,7 +3,8 @@
 <plugin>
 
    <extension
-         id="JCC Marker"
+         id="jccmarker"
+         name="Java Convention Check Marker"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">
@@ -12,7 +13,7 @@
             type="org.eclipse.core.resources.textmarker">
       </super>
       <attribute
-            name="JCC Marker">
+            name="Type">
       </attribute>
       <persistent
             value="true">
@@ -30,10 +31,48 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.jdt.ui.JavaBrowsingPerspective">
+         <view
+               id="Java Convention Plugin.MarkerView"
+               minimized="false"
+               relationship="stack">
+         </view>
       </perspectiveExtension>
    </extension>
+   <extension 
+      point="org.eclipse.ui.views"> 
+   <view
+         allowMultiple="false"
+         category="Java Convention Plugin.category"
+         class="javaConvention.view.JCCMarkerView"
+         id="Java Convention Plugin.MarkerView"
+         name="JCC Marker"> 
+   </view>
+   <category
+         id="Java Convention Plugin.category"
+         name="JCC">
+   </category> 
+</extension>
    <extension
          point="org.eclipse.ui.ide.markerSupport">
+      <markerContentGenerator
+            id="Java Convention Plugin.markerContentGenerator"
+            name="JCC marker Content Generation">
+         <markerTypeReference
+               id="org.eclipse.jdt.core.problem">
+         </markerTypeReference>
+         <markerTypeReference 
+         id="org.eclipse.core.resources.marker"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.severityAndDescriptionField"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.locationField"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.markerType"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.priorityField"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.resourceField"/> 
+      </markerContentGenerator>
    </extension>
 
 </plugin>
