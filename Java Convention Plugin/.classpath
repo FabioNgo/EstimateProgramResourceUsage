@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.core.resources.source_3.8.101.v20130717-0806.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.core.resources.win32.x86_64_3.5.0.v20121203-0906.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.core.resources_3.8.101.v20130717-0806.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.jdt.core.source_3.9.2.v20140114-1555.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.jdt.core_3.9.2.v20140114-1555.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.jdt.compiler.apt.source_1.0.600.v20130530-1010.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.jdt.compiler.apt_1.0.600.v20130530-1010.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.jdt.compiler.tool.source_1.0.200.v20130530-1010.jar"/>
+	<classpathentry kind="lib" path="F:/Coding/eclipse-std/plugins/org.eclipse.jdt.compiler.tool_1.0.200.v20130530-1010.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
