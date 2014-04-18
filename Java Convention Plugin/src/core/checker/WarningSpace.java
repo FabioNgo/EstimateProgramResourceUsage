@@ -32,42 +32,42 @@ public class WarningSpace extends Warning {
 			return result;
 		}
 		if (type == INDENT) {
-			result = "Wrong indentation.";
+			result = "Not good indentation.";
 			if (args[0] == "false") {
-				result += " The correct one is " + args[1] + " tab(s)";
+				result += " The indent should be " + args[1] + " tab(s)";
 				return result;
 			}
 		}
 		if (type == ENDLINECOMMENT) {
-			result = "Should be on a new line after a comment";
+			result = "A new line should be placed after a comment";
 			return result;
 		}
 		if (type == ENDSPACE) {
-			result = "Should not leave space at the end of line";
+			result = "Space shoud not be places at the end of line";
 			return result;
 		}
 		if (type == COMMENTSPACE) {
 			if (Integer.valueOf(args[0])== Integer.valueOf(1)) {
-				result = "Should have one space before comment";
+				result = "One space shoud be placed before comment";
 			} else {
-				result = "Should have no space before comment";
+				result = "Space(s) shoud not be placed  before comment";
 			}
 			return result;
 		}
 		if (type == NEWLINE) {
-			result = "Should go to a new line";
+			result = "A return character should be placed in the end of the line";
 			return result;
 		}
 		if (type == NOTNEWLINE) {
-			result = "Should not go to a new line";
+			result = "A return character should not be placed in the end of the line";
 			return result;
 		}
 		if (type == BLANKLINE) {
-			result = "Should have a blank line";
+			result = "A blank line should be placed after this line";
 			return result;
 		}
 		if (type == NOTBLANKLINE) {
-			result = "Should not have blank line";
+			result = "A blank line should not be placed here";
 			return result;
 		}
 		if (type == INNERCOMMNET) {
@@ -75,7 +75,8 @@ public class WarningSpace extends Warning {
 			return result;
 		}
 		if (type == SPACE) {
-			result = "Number of spaces should be " + args[0] + "";
+			
+			result = "Number of spaces should be " + args[0] + " after '" + args[1]+"'";
 			return result;
 		}
 

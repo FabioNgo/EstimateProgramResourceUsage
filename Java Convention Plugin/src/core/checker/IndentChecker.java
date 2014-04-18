@@ -497,10 +497,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                 } else {
                     if (comparedSpaces[0].compareTo(correctSpaces[0]) != 0
                             && !inWrapLine) {
-                            String[] args = new String[1];
+                            String[] args = new String[2];
                             args[0] = String.valueOf(correctSpaces[0].length());
-                            warnings.add(new WarningSpace(new Position(getToken(1).beginLine,
-                                    beginLine, getToken(1).beginColumn, -1), args, WarningSpace.SPACE));
+                            args[1] = getToken(1).image;
+                            warnings.add(new WarningSpace(new Position(getToken(0).beginLine,
+                                    beginLine, getToken(0).beginColumn, -1), args, WarningSpace.SPACE));
 
                     }
                 }
@@ -7109,13 +7110,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(SPACES)) return true;
+  private boolean jj_3R_385() {
+    if (jj_3R_195()) return true;
     return false;
   }
 
-  private boolean jj_3R_385() {
-    if (jj_3R_195()) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7166,11 +7167,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_109() {
-    if (jj_scan_token(SPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_226() {
     if (jj_scan_token(IDENTIFIER)) return true;
     Token xsp;
@@ -7178,6 +7174,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3_13()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  private boolean jj_3R_109() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7233,15 +7234,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_81() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_109()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   private boolean jj_3_60() {
     Token xsp;
     while (true) {
@@ -7249,6 +7241,15 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_81() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 

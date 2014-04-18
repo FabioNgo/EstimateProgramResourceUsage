@@ -1104,9 +1104,6 @@ void CompilationUnit():
   [ LOOKAHEAD( ( Annotation() )* "package" )
     {
 		if (blockComment==false){
-			Out("Warning at line 1: ");
-			Out("Adding/using block comment to add information about this file - ");
-			Out("  Author, Copyright, Discription,...\n");
 			warnings.add(new WarningComment(
 		new Position(1, 0, 0, 0),
 		new String[] {WarningComment.BEGIN}));

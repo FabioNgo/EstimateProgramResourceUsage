@@ -567,10 +567,11 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
                 } else {
                     if (comparedSpaces[0].compareTo(correctSpaces[0]) != 0
                             && !inWrapLine) {
-                            String[] args = new String[1];
+                            String[] args = new String[2];
                             args[0] = String.valueOf(correctSpaces[0].length());
-                            warnings.add(new WarningSpace(new Position(getToken(1).beginLine,
-                                    beginLine, getToken(1).beginColumn, -1), args, WarningSpace.SPACE));
+                            args[1] = getToken(1).image;
+                            warnings.add(new WarningSpace(new Position(getToken(0).beginLine,
+                                    beginLine, getToken(0).beginColumn, -1), args, WarningSpace.SPACE));
                         
                     }
                 }
