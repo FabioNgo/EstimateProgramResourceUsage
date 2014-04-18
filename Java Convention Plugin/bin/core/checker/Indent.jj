@@ -357,8 +357,8 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
         if (noOfComment > 1) {
           Out(""+noOfComment+" ");
             String[] args = new String[0];
-            warnings.add(new WarningIndent(new Position(currentLine,
-                    currentLine, -1, -1), args, WarningIndent.SINGLELINECOMMENT));
+            warnings.add(new WarningSpace(new Position(currentLine,
+                    currentLine, -1, -1), args, WarningSpace.SINGLELINECOMMENT));
         }
         // indentation
 
@@ -387,8 +387,8 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
             if (!inWrapLine) {
                 args[0] = "false";
                 args[1] = String.valueOf(correctIndent.length() / 4);
-                warnings.add(new WarningIndent(new Position(currentLine,
-                        currentLine, -1, -1), args, WarningIndent.INDENT));
+                warnings.add(new WarningSpace(new Position(currentLine,
+                        currentLine, -1, -1), args, WarningSpace.INDENT));
             } else {
             }
 
@@ -405,18 +405,19 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
             // newline
             if (sb.charAt(sb.length() - 1) == newlineTok) {
                 String[] args = new String[0];
-                warnings.add(new WarningIndent(new Position(currentLine,
-                        currentLine, -1, -1), args, WarningIndent.ENDLINECOMMENT));
+                warnings.add(new WarningSpace(new Position(currentLine,
+                        currentLine, -1, -1), args, WarningSpace.ENDLINECOMMENT));
 
             }
             // space at the end of line
-            if (endOfLine) {
+            if (endOfLine&&!chkIndent) {
               String temp = sb.toString();
                 if (temp.contains(" ")||temp.contains("\t")) {
                   if (!temp.contains(String.valueOf(singleComment))) {
                     String[] args = new String[0];
-                    warnings.add(new WarningIndent(new Position(currentLine,
-                            currentLine, -1, -1), args, WarningIndent.ENDSPACE));
+                    //Out("|"+temp+"\n");
+                    warnings.add(new WarningSpace(new Position(currentLine,
+                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
                   }
                 }
             }
@@ -431,9 +432,9 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                         if (i != 1) {
                             String[] args = new String[1];
                             args[0] = String.valueOf(1);
-                            warnings.add(new WarningIndent(new Position(
+                            warnings.add(new WarningSpace(new Position(
                                     currentLine, currentLine, -1, -1), args,
-                                    WarningIndent.COMMENTSPACE));
+                                    WarningSpace.COMMENTSPACE));
                             for (int j = 0; i < sb.length();) {
                                 if (sb.charAt(j) == ' ')
                                     sb.deleteCharAt(j);
@@ -446,9 +447,9 @@ void FormalCheck(String input, int beginLine,int subline, boolean chkIndent, boo
                         if (i != 0) {
                             String[] args = new String[1];
                             args[0] = String.valueOf(0);
-                            warnings.add(new WarningIndent(new Position(
+                            warnings.add(new WarningSpace(new Position(
                                     currentLine, currentLine, -1, -1), args,
-                                    WarningIndent.COMMENTSPACE));
+                                    WarningSpace.COMMENTSPACE));
 
                             for (int j = 0; i < sb.length();) {
                                 if (sb.charAt(j) == ' ')
@@ -492,6 +493,7 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
         }
         int a = 0;
         for (int i = 0; i < comparedSpaces.length; i++) {
+          //if(i!=0) endOfLine = false;
             if (i != 0&& correctSpace.contains("\n")) {
                 chkIndent = true;
             } else {
@@ -511,8 +513,8 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
                     //Out(lines.size()+"|\n");
                     String[] args = new String[0];
                     lnNotConsidered++;
-                    warnings.add(new WarningIndent(new Position(lines.get(a),
-                           lines.get(a), -1, -1), args, WarningIndent.NOTBLANKLINE));
+                    warnings.add(new WarningSpace(new Position(lines.get(a),
+                           lines.get(a), -1, -1), args, WarningSpace.NOTBLANKLINE));
                            a++;
                   }else
                   {
@@ -537,13 +539,13 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
                 if(blankLines >0)
                 {
                   String[] args = new String[0];
-                    warnings.add(new WarningIndent(new Position(beginLine,
-                        beginLine, -1, -1), args, WarningIndent.BLANKLINE));
+                    warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.BLANKLINE));
                 }else
                 {
                   String[] args = new String[0];
-                warnings.add(new WarningIndent(new Position(beginLine,
-                        beginLine, -1, -1), args, WarningIndent.NEWLINE));
+                warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.NEWLINE));
                }
                 
 
@@ -552,23 +554,23 @@ void comparedSpaceProcess(String comparedSpace,String correctSpace,int beginLine
                 lnNotConsidered++;
             if (comparedSpaces.length - lnNotConsidered > correctSpaces.length) {
                 String[] args = new String[0];
-                warnings.add(new WarningIndent(new Position(beginLine,
-                        beginLine, -1, -1), args, WarningIndent.NOTNEWLINE));
+                warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.NOTNEWLINE));
             }
             if (comparedSpaces.length - lnNotConsidered == correctSpaces.length
                     && !endOfLine) {
                 if (comparedSpaces[0].contains(Character.toString(singleComment))) {
                     String[] args = new String[0];
-                    warnings.add(new WarningIndent(new Position(beginLine,
-                            beginLine, -1, -1), args, WarningIndent.INNERCOMMNET));
+                    warnings.add(new WarningSpace(new Position(beginLine,
+                            beginLine, -1, -1), args, WarningSpace.INNERCOMMNET));
                     
                 } else {
                     if (comparedSpaces[0].compareTo(correctSpaces[0]) != 0
                             && !inWrapLine) {
                             String[] args = new String[1];
                             args[0] = String.valueOf(correctSpaces[0].length());
-                            warnings.add(new WarningIndent(new Position(getToken(1).beginLine,
-                                    beginLine, getToken(1).beginColumn, -1), args, WarningIndent.SPACE));
+                            warnings.add(new WarningSpace(new Position(getToken(1).beginLine,
+                                    beginLine, getToken(1).beginColumn, -1), args, WarningSpace.SPACE));
                         
                     }
                 }

@@ -290,8 +290,8 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
         if (noOfComment > 1) {
           Out(""+noOfComment+" ");
             String[] args = new String[0];
-            warnings.add(new WarningIndent(new Position(currentLine,
-                    currentLine, -1, -1), args, WarningIndent.SINGLELINECOMMENT));
+            warnings.add(new WarningSpace(new Position(currentLine,
+                    currentLine, -1, -1), args, WarningSpace.SINGLELINECOMMENT));
         }
         // indentation
 
@@ -320,8 +320,8 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
             if (!inWrapLine) {
                 args[0] = "false";
                 args[1] = String.valueOf(correctIndent.length() / 4);
-                warnings.add(new WarningIndent(new Position(currentLine,
-                        currentLine, -1, -1), args, WarningIndent.INDENT));
+                warnings.add(new WarningSpace(new Position(currentLine,
+                        currentLine, -1, -1), args, WarningSpace.INDENT));
             } else {
             }
 
@@ -338,18 +338,19 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
             // newline
             if (sb.charAt(sb.length() - 1) == newlineTok) {
                 String[] args = new String[0];
-                warnings.add(new WarningIndent(new Position(currentLine,
-                        currentLine, -1, -1), args, WarningIndent.ENDLINECOMMENT));
+                warnings.add(new WarningSpace(new Position(currentLine,
+                        currentLine, -1, -1), args, WarningSpace.ENDLINECOMMENT));
 
             }
             // space at the end of line
-            if (endOfLine) {
+            if (endOfLine&&!chkIndent) {
               String temp = sb.toString();
                 if (temp.contains(" ")||temp.contains("\u005ct")) {
                   if (!temp.contains(String.valueOf(singleComment))) {
                     String[] args = new String[0];
-                    warnings.add(new WarningIndent(new Position(currentLine,
-                            currentLine, -1, -1), args, WarningIndent.ENDSPACE));
+                    //Out("|"+temp+"\n");
+                    warnings.add(new WarningSpace(new Position(currentLine,
+                            currentLine, -1, -1), args, WarningSpace.ENDSPACE));
                   }
                 }
             }
@@ -364,9 +365,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                         if (i != 1) {
                             String[] args = new String[1];
                             args[0] = String.valueOf(1);
-                            warnings.add(new WarningIndent(new Position(
+                            warnings.add(new WarningSpace(new Position(
                                     currentLine, currentLine, -1, -1), args,
-                                    WarningIndent.COMMENTSPACE));
+                                    WarningSpace.COMMENTSPACE));
                             for (int j = 0; i < sb.length();) {
                                 if (sb.charAt(j) == ' ')
                                     sb.deleteCharAt(j);
@@ -379,9 +380,9 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                         if (i != 0) {
                             String[] args = new String[1];
                             args[0] = String.valueOf(0);
-                            warnings.add(new WarningIndent(new Position(
+                            warnings.add(new WarningSpace(new Position(
                                     currentLine, currentLine, -1, -1), args,
-                                    WarningIndent.COMMENTSPACE));
+                                    WarningSpace.COMMENTSPACE));
 
                             for (int j = 0; i < sb.length();) {
                                 if (sb.charAt(j) == ' ')
@@ -422,6 +423,7 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
         }
         int a = 0;
         for (int i = 0; i < comparedSpaces.length; i++) {
+          //if(i!=0) endOfLine = false;
             if (i != 0&& correctSpace.contains("\u005cn")) {
                 chkIndent = true;
             } else {
@@ -441,8 +443,8 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                     //Out(lines.size()+"|\n");
                     String[] args = new String[0];
                     lnNotConsidered++;
-                    warnings.add(new WarningIndent(new Position(lines.get(a),
-                           lines.get(a), -1, -1), args, WarningIndent.NOTBLANKLINE));
+                    warnings.add(new WarningSpace(new Position(lines.get(a),
+                           lines.get(a), -1, -1), args, WarningSpace.NOTBLANKLINE));
                            a++;
                   }else
                   {
@@ -467,13 +469,13 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                 if(blankLines >0)
                 {
                   String[] args = new String[0];
-                    warnings.add(new WarningIndent(new Position(beginLine,
-                        beginLine, -1, -1), args, WarningIndent.BLANKLINE));
+                    warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.BLANKLINE));
                 }else
                 {
                   String[] args = new String[0];
-                warnings.add(new WarningIndent(new Position(beginLine,
-                        beginLine, -1, -1), args, WarningIndent.NEWLINE));
+                warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.NEWLINE));
                }
 
 
@@ -482,23 +484,23 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
                 lnNotConsidered++;
             if (comparedSpaces.length - lnNotConsidered > correctSpaces.length) {
                 String[] args = new String[0];
-                warnings.add(new WarningIndent(new Position(beginLine,
-                        beginLine, -1, -1), args, WarningIndent.NOTNEWLINE));
+                warnings.add(new WarningSpace(new Position(beginLine,
+                        beginLine, -1, -1), args, WarningSpace.NOTNEWLINE));
             }
             if (comparedSpaces.length - lnNotConsidered == correctSpaces.length
                     && !endOfLine) {
                 if (comparedSpaces[0].contains(Character.toString(singleComment))) {
                     String[] args = new String[0];
-                    warnings.add(new WarningIndent(new Position(beginLine,
-                            beginLine, -1, -1), args, WarningIndent.INNERCOMMNET));
+                    warnings.add(new WarningSpace(new Position(beginLine,
+                            beginLine, -1, -1), args, WarningSpace.INNERCOMMNET));
 
                 } else {
                     if (comparedSpaces[0].compareTo(correctSpaces[0]) != 0
                             && !inWrapLine) {
                             String[] args = new String[1];
                             args[0] = String.valueOf(correctSpaces[0].length());
-                            warnings.add(new WarningIndent(new Position(getToken(1).beginLine,
-                                    beginLine, getToken(1).beginColumn, -1), args, WarningIndent.SPACE));
+                            warnings.add(new WarningSpace(new Position(getToken(1).beginLine,
+                                    beginLine, getToken(1).beginColumn, -1), args, WarningSpace.SPACE));
 
                     }
                 }
@@ -7092,11 +7094,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(SPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_110() {
     if (jj_3R_148()) return true;
     return false;
@@ -7109,6 +7106,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     jj_scanpos = xsp;
     if (jj_3R_111()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7154,11 +7156,6 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_109() {
-    if (jj_scan_token(SPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3_62() {
     Token xsp;
     while (true) {
@@ -7166,6 +7163,11 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
       if (jj_scan_token(7)) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_109() {
+    if (jj_scan_token(SPACES)) return true;
     return false;
   }
 
@@ -7226,17 +7228,17 @@ public class IndentChecker implements IChecker, IndentCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_228() {
+    if (jj_3R_160()) return true;
+    return false;
+  }
+
   private boolean jj_3R_81() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_109()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_228() {
-    if (jj_3R_160()) return true;
     return false;
   }
 
