@@ -7,9 +7,10 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class JCCHandler {
-	final public static int CHECK_TYPE_COMMENT = 2;
 	final public static int CHECK_TYPE_INDENT = 1;
+	final public static int CHECK_TYPE_COMMENT = 2;
 	final public static int CHECK_TYPE_NAMING = 3;
+	final public static int CHECK_TYPE_OTHER = 4;
 
 	public Vector<Warning> warnings;
 
@@ -30,6 +31,8 @@ public class JCCHandler {
 					+ ". Check comment convention.");
 			System.out.println("\t " + JCCHandler.CHECK_TYPE_INDENT
 					+ ". Check indent convention.");
+			System.out.println("\t " + JCCHandler.CHECK_TYPE_OTHER
+					+ ". Check other convention.");
 			System.out.println("\t 0. Exit.");
 			System.out.print("\tWhat do you want?");
 			type = in.nextInt();
@@ -50,6 +53,7 @@ public class JCCHandler {
 	private IChecker checker;
 	private CommentChecker commentChecker;
 	private IndentChecker indentChecker;
+	private OtherChecker otherChecker;
 
 	private NamingChecker namingChecker;
 
@@ -57,6 +61,7 @@ public class JCCHandler {
 		namingChecker = new NamingChecker(stream);
 		commentChecker = new CommentChecker(stream);
 		indentChecker = new IndentChecker(stream);
+		otherChecker = new OtherChecker(stream);
 	}
 
 	public Vector<Warning> check(InputStream is, int type) {
@@ -69,6 +74,9 @@ public class JCCHandler {
 			break;
 		case CHECK_TYPE_NAMING:
 			checker = namingChecker;
+			break;
+		case CHECK_TYPE_OTHER:
+			checker = otherChecker;
 			break;
 		default:
 			return warnings;

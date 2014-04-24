@@ -4,6 +4,7 @@ public abstract class Warning {
 	static final public int TYPE_NAMING = 1;
 	static final public int TYPE_SPACE = 2;
 	static final public int TYPE_COMMENT = 3;
+	static final public int TYPE_OTHER = 4;
 
 	public Position pos;
 	public String args[];
