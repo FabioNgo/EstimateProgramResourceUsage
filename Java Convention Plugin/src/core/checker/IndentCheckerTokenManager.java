@@ -2349,18 +2349,18 @@ void TokenLexicalActions(Token matchedToken)
       case 122 :
         image.append(jjstrLiteralImages[122]);
         lengthOfMatch = jjstrLiteralImages[122].length();
-     matchedToken.kind = GT;
-     ((MyIndentToken)matchedToken).realKind = RUNSIGNEDSHIFT;
-     input_stream.backup(2);
-     matchedToken.image = ">";
+    matchedToken.kind = GT;
+    ((MyIndentToken) matchedToken).realKind = RUNSIGNEDSHIFT;
+    input_stream.backup(2);
+    matchedToken.image = ">";
          break;
       case 123 :
         image.append(jjstrLiteralImages[123]);
         lengthOfMatch = jjstrLiteralImages[123].length();
-     matchedToken.kind = GT;
-     ((MyIndentToken)matchedToken).realKind = RSIGNEDSHIFT;
-     input_stream.backup(1);
-     matchedToken.image = ">";
+    matchedToken.kind = GT;
+    ((MyIndentToken) matchedToken).realKind = RSIGNEDSHIFT;
+    input_stream.backup(1);
+    matchedToken.image = ">";
          break;
       default :
          break;

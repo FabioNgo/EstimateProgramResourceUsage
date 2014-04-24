@@ -2065,7 +2065,7 @@ void MoreLexicalActions()
       case 6 :
          image.append(input_stream.GetSuffix(jjimageLen));
          jjimageLen = 0;
-                   input_stream.backup(1);
+    input_stream.backup(1);
          break;
       default :
          break;
@@ -2078,18 +2078,18 @@ void TokenLexicalActions(Token matchedToken)
       case 124 :
         image.append(jjstrLiteralImages[124]);
         lengthOfMatch = jjstrLiteralImages[124].length();
-     matchedToken.kind = GT;
-     ((MyOtherToken)matchedToken).realKind = RUNSIGNEDSHIFT;
-     input_stream.backup(2);
-     matchedToken.image = ">";
+    matchedToken.kind = GT;
+    ((MyOtherToken) matchedToken).realKind = RUNSIGNEDSHIFT;
+    input_stream.backup(2);
+    matchedToken.image = ">";
          break;
       case 125 :
         image.append(jjstrLiteralImages[125]);
         lengthOfMatch = jjstrLiteralImages[125].length();
-     matchedToken.kind = GT;
-     ((MyOtherToken)matchedToken).realKind = RSIGNEDSHIFT;
-     input_stream.backup(1);
-     matchedToken.image = ">";
+    matchedToken.kind = GT;
+    ((MyOtherToken) matchedToken).realKind = RSIGNEDSHIFT;
+    input_stream.backup(1);
+    matchedToken.image = ">";
          break;
       default :
          break;

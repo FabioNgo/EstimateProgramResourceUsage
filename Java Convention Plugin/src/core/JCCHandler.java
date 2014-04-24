@@ -11,6 +11,9 @@ public class JCCHandler {
 	final public static int CHECK_TYPE_COMMENT = 2;
 	final public static int CHECK_TYPE_NAMING = 3;
 	final public static int CHECK_TYPE_OTHER = 4;
+	
+	final public static String inputFile = "input.txt";
+	final public static String rulesFile = "src/core/rules.txt";
 
 	public Vector<Warning> warnings;
 
@@ -20,25 +23,26 @@ public class JCCHandler {
 
 	public static void main(String[] args) {
 		Vector<Warning> warnings = null;
-
+		RuleType.loadRules(rulesFile);
 		int type = 1;
 		while (type != EXIT) {
 			System.out.println();
-			System.out.println();
-			System.out.println("\t " + JCCHandler.CHECK_TYPE_NAMING
-					+ ". Check naming convention.");
-			System.out.println("\t " + JCCHandler.CHECK_TYPE_COMMENT
-					+ ". Check comment convention.");
 			System.out.println("\t " + JCCHandler.CHECK_TYPE_INDENT
 					+ ". Check indent convention.");
+			System.out.println("\t " + JCCHandler.CHECK_TYPE_COMMENT
+					+ ". Check comment convention.");
+			System.out.println("\t " + JCCHandler.CHECK_TYPE_NAMING
+					+ ". Check naming convention.");
 			System.out.println("\t " + JCCHandler.CHECK_TYPE_OTHER
 					+ ". Check other convention.");
-			System.out.println("\t 0. Exit.");
+			System.out.println("\t " + JCCHandler.EXIT + ". Exit");
 			System.out.print("\tWhat do you want?");
 			type = in.nextInt();
+			if (type == EXIT)
+				return;
 
 			InputStream inputStream = JCCHandler.class
-					.getResourceAsStream("input.txt");
+					.getResourceAsStream(inputFile);
 
 			JCCHandler jccHandler = new JCCHandler(inputStream);
 			warnings = jccHandler.check(inputStream, type);

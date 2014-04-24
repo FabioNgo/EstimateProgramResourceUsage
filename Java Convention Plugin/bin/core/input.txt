@@ -56,6 +56,10 @@ public class JCCHandler {
 		namingChecker = new NamingChecker(stream);
 		commentChecker = new CommentChecker(stream);
 		indentChecker = new IndentChecker(stream);
+		if (test)
+			 test2; 
+		 else 
+		 test3;
 	}
 
 	public Vector<Warning> check(InputStream is, int type) {
