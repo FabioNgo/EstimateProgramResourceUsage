@@ -1,19 +1,25 @@
 package core;
 
-import core.checker.*;
-
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Vector;
+
+import core.checker.CommentChecker;
+import core.checker.Checker;
+import core.checker.IndentChecker;
+import core.checker.NamingChecker;
+import core.checker.OtherChecker;
+import core.rules.RulesManager;
+import core.warning.Warning;
 
 public class JCCHandler {
 	final public static int CHECK_TYPE_INDENT = 1;
 	final public static int CHECK_TYPE_COMMENT = 2;
 	final public static int CHECK_TYPE_NAMING = 3;
 	final public static int CHECK_TYPE_OTHER = 4;
-	
+
 	final public static String inputFile = "input.txt";
-	final public static String rulesFile = "src/core/rules.txt";
+	final public static String rulesFile = "C:/Users/wind/workspace/std/JCC.Core/src/core/rules.txt";
 
 	public Vector<Warning> warnings;
 
@@ -23,7 +29,6 @@ public class JCCHandler {
 
 	public static void main(String[] args) {
 		Vector<Warning> warnings = null;
-		RuleType.loadRules(rulesFile);
 		int type = 1;
 		while (type != EXIT) {
 			System.out.println();
@@ -54,7 +59,7 @@ public class JCCHandler {
 		}
 	}
 
-	private IChecker checker;
+	private Checker checker;
 	private CommentChecker commentChecker;
 	private IndentChecker indentChecker;
 	private OtherChecker otherChecker;
@@ -66,6 +71,8 @@ public class JCCHandler {
 		commentChecker = new CommentChecker(stream);
 		indentChecker = new IndentChecker(stream);
 		otherChecker = new OtherChecker(stream);
+
+		otherChecker.rm = RulesManager.createRulesManager(rulesFile);
 	}
 
 	public Vector<Warning> check(InputStream is, int type) {
@@ -85,13 +92,14 @@ public class JCCHandler {
 		default:
 			return warnings;
 		}
+
 		try {
 			checker.ReInit(is);
 			checker.resetVariables();
 			checker.CompilationUnit();
 			warnings = checker.getWarnings();
-		} catch (ParseException e) {
-			return warnings;
+		} catch (core.checker.ParseException e) {
+			e.printStackTrace();
 		}
 		return warnings;
 	}

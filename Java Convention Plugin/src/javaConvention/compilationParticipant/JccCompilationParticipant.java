@@ -10,10 +10,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
-import org.eclipse.jface.text.BadLocationException;
 
 import core.JCCHandler;
-import core.checker.Warning;
+import core.warning.Warning;
 
 public class JccCompilationParticipant extends CompilationParticipant {
 
@@ -65,12 +64,12 @@ public class JccCompilationParticipant extends CompilationParticipant {
 				try {
 					w = jccHandler.check(file.getContents(),
 							JCCHandler.CHECK_TYPE_OTHER);
-//					w.addAll(jccHandler.check(file.getContents(),
-//							JCCHandler.CHECK_TYPE_COMMENT));
-//					w.addAll(jccHandler.check(file.getContents(),
-//							JCCHandler.CHECK_TYPE_NAMING));
-//					w.addAll(jccHandler.check(file.getContents(),
-//							JCCHandler.CHECK_TYPE_INDENT));
+					// w.addAll(jccHandler.check(file.getContents(),
+					// JCCHandler.CHECK_TYPE_COMMENT));
+					// w.addAll(jccHandler.check(file.getContents(),
+					// JCCHandler.CHECK_TYPE_NAMING));
+					// w.addAll(jccHandler.check(file.getContents(),
+					// JCCHandler.CHECK_TYPE_INDENT));
 					for (int i = 0; i < w.size(); i++) {
 						IMarker marker = file.createMarker(MARKER_TYPE);
 						marker.setAttribute(IMarker.LOCATION,

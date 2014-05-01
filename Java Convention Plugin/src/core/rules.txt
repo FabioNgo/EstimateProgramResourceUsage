@@ -1,0 +1,3 @@
+IF_NotAllowElse(active, CONSTRUCTOR);
+IF_MustUseBracket(active, CONSTRUCTOR);
+SWITCH_MustHaveDefaultBranch(active, CONSTRUCTOR);
