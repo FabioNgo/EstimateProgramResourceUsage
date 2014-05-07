@@ -657,7 +657,7 @@ TOKEN :{  < LPAREN : "(" >| < RPAREN : ")" >| < LBRACE : "{" >| < RBRACE : 
  * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
  *****************************************//*
  * Program structuring syntax follows.
- */void CompilationUnit() :{}{  [    LOOKAHEAD((Annotation())* "package")    PackageDeclaration()  ]  (    ImportDeclaration()  )*  (    TypeDeclaration()  )+  (< "" >)? (< STUFF_TO_IGNORE : ~[ ] >)? < EOF >}void PackageDeclaration() :{}{  Modifiers() "package"  state.inPackage = Name() ";"}void ImportDeclaration() :{}{  "import" [ "static" ] Name() [ "." "*" ] ";"}/*
+ */void CompilationUnit() :{}{  [    LOOKAHEAD((Annotation())* "package")    PackageDeclaration()  ]  {	Warning w = OtherCheckImplements.FILE_MustHavePackageDeclaration(this);	if (w!=null) warnings.add(w);  }    (    ImportDeclaration()  )*  (    TypeDeclaration()  )+  (< "" >)? (< STUFF_TO_IGNORE : ~[ ] >)? < EOF >}void PackageDeclaration() :{}{  Modifiers() "package"  state.inPackage = Name() ";"}void ImportDeclaration() :{}{  "import" [ "static" ] Name() [ "." "*" ] ";"}/*
  * Modifiers. We match all modifiers in a single rule to reduce the chances of
  * syntax errors for simple modifier mistakes. It will also enable us to give
  * better error messages.
@@ -665,14 +665,14 @@ TOKEN :{  < LPAREN : "(" >| < RPAREN : ")" >| < LBRACE : "{" >| < RBRACE : 
     if (ModifierSet.isFinal(modifiers)) state.isFinal = true;
     else state.isFinal = false;    return modifiers;  }}/*
  * Declaration syntax follows.
- */void TypeDeclaration() :{  int modifiers;}{  ";"| modifiers = Modifiers()  (    ClassOrInterfaceDeclaration(modifiers)  | EnumDeclaration(modifiers)  | AnnotationTypeDeclaration(modifiers)  )}void ClassOrInterfaceDeclaration(int modifiers) :{  boolean isInterface = false;
+ */void TypeDeclaration() :{  int modifiers;}{  ";"| modifiers = Modifiers()  (    ClassOrInterfaceDeclaration(modifiers)  | EnumDeclaration(modifiers)  | AnnotationTypeDeclaration(modifiers)  )}void ClassOrInterfaceDeclaration(int modifiers) :{  boolean hasDefaultConstructor_ = state.hasDefaultConstructor;  boolean isInterface = false;
   String inClass_ = state.inClass, inInterface_ = state.inInterface;
-  Token t;}{  (    "class"    {	 state.inClass = getToken(1).image;
+  Token t;}{  (    "class"    {	 state.inClass = getToken(1).image;	 state.hasDefaultConstructor = false; 
     }  | "interface"    {      isInterface = true;
       state.inInterface = getToken(1).image;    }  )  < IDENTIFIER > [ TypeParameters() ] [ ExtendsList(isInterface) ] [ ImplementsList(isInterface) ] ClassOrInterfaceBody(isInterface)
 
-  {	state.inClass = inClass_;
-	state.inInterface = inInterface_;
+  {    Warning w = OtherCheckImplements.CLASS_MustHaveDefaultConstructor(this);    if (w != null) warnings.add(w);    state.inClass = inClass_;
+	state.inInterface = inInterface_;	state.hasDefaultConstructor = hasDefaultConstructor_; 
   }}void ExtendsList(boolean isInterface) :{  boolean extendsMoreThanOne = false;}{  "extends" ClassOrInterfaceType()  (    "," ClassOrInterfaceType()    {      extendsMoreThanOne = true;    }  )*  {    if (extendsMoreThanOne && !isInterface) throw new ParseException("A class cannot extend more than one other class");  }}void ImplementsList(boolean isInterface) :{}{  "implements" ClassOrInterfaceType()  (    "," ClassOrInterfaceType()  )*  {    if (isInterface) throw new ParseException("An interface cannot implement other interfaces");  }}void EnumDeclaration(int modifiers) :{Token t;
 String inEnum_ = state.inEnum;}{  "enum"  {	state.inEnum = getToken(1).image;
   }
@@ -695,14 +695,14 @@ String inEnum_ = state.inEnum;}{  "enum"  {	state.inEnum = getToken(1).image
   }}String MethodDeclarator() :{Token t;}{
     t = < IDENTIFIER > FormalParameters() ("[" "]")*
   {	return t.image;
-  }}void FormalParameters() :{}{  "("  [    FormalParameter()    (      "," FormalParameter()    )*  ]  ")"}void FormalParameter() :{}{  // danson, added
+  }}/* Return the number of parameters*/int FormalParameters() :{ int count = 0;}{  "("  [    FormalParameter()    {      count++;    }    (      "," FormalParameter()      {        count++;      }    )*  ]  ")"  {    return count;  }}void FormalParameter() :{}{  // danson, added
   //          [ "final" | Annotation() ]
   // See Java Language Specification, 3rd Edition, section 8.4.1
-  Modifiers()  [    "final"  | Annotation()  ]  Type() [ "..." ] VariableDeclaratorId()}void ConstructorDeclaration() :{String inConstructor_ = state.inConstructor;}{  [ TypeParameters() ]  // Modifiers matched in the caller
+  Modifiers()  [    "final"  | Annotation()  ]  Type() [ "..." ] VariableDeclaratorId()}void ConstructorDeclaration() :{String inConstructor_ = state.inConstructor; int i;}{  [ TypeParameters() ]  // Modifiers matched in the caller
   {
     state.inConstructor = getToken(1).image;  }
-  < IDENTIFIER > FormalParameters() [ "throws" NameList() ] "{"  [    LOOKAHEAD(ExplicitConstructorInvocation())    ExplicitConstructorInvocation()  ]  (    BlockStatement()  )*  "}"
-  {	state.inConstructor = inConstructor_;
+  < IDENTIFIER > i = FormalParameters() [ "throws" NameList() ] "{"  [    LOOKAHEAD(ExplicitConstructorInvocation())    ExplicitConstructorInvocation()  ]  (    BlockStatement()  )*  "}"
+  {	state.inConstructor = inConstructor_;	if (i==0)		state.hasDefaultConstructor = true;
   }}void ExplicitConstructorInvocation() :{}{  (< IDENTIFIER > ".")*  [    LOOKAHEAD(2)    "this" "."  ]  [ TypeArguments() ]  (    "this"  | "super"  )  Arguments() ";"}void Initializer() :{}{  [ "static" ] Block()}/*
  * Type, name and expression syntax follows.
  */void Type() :{}{  LOOKAHEAD(2)  ReferenceType()| PrimitiveType()}void ReferenceType() :{}{  PrimitiveType()  (    LOOKAHEAD(2)    "[" "]"  )+|  (    ClassOrInterfaceType()  )  (    LOOKAHEAD(2)    "[" "]"  )*}void ClassOrInterfaceType() :{}{  < IDENTIFIER >  [    LOOKAHEAD(2)    TypeArguments()  ]  (    LOOKAHEAD(2)    "." < IDENTIFIER >    [      LOOKAHEAD(2)      TypeArguments()    ]  )*}void TypeArguments() :{}{  "<" TypeArgument()  (    "," TypeArgument()  )*  ">"}void TypeArgument() :{}{  ReferenceType()| "?" [ WildcardBounds() ]}void WildcardBounds() :{}{  "extends" ReferenceType()| "super" ReferenceType()}void PrimitiveType() :{}{  "boolean"| "char"| "byte"| "short"| "int"| "long"| "float"| "double"}void ResultType() :{}{  "void"| Type()}String Name() :/*
@@ -735,7 +735,7 @@ void CastLookahead() :{}{  LOOKAHEAD(2)  "(" PrimitiveType()| LOOKAHEAD("("
  * use PostfixExpression for performance reasons.
  */{}{  PreIncrementExpression()| PreDecrementExpression()| PrimaryExpression()  [    "++"  | "--"  | AssignmentOperator() Expression()  ]}void SwitchStatement() :{ boolean inSwitch_= state.isInSwitch;  boolean default_ = false;}{
   {
-    state.isInSwitch = true;  }  "switch" "(" Expression() ")" "{"  (    SwitchLabel(default_)    (      BlockStatement()    )*  )*  {    Warning w = OtherCheckImplements.SWITCH_MustHaveDefaultBranch(this, getToken(1));    if (w != null) warnings.add(w);  }  "}"
+    state.isInSwitch = true;  }  "switch" "(" Expression() ")" "{"  (    SwitchLabel(default_)    (      BlockStatement()    )*  )*  {    Warning w = OtherCheckImplements.SWITCH_MustHaveDefaultBranch(this);    if (w != null) warnings.add(w);  }  "}"
 
   {	state.isInSwitch = inSwitch_;
   }}void SwitchLabel(boolean default_) :{}{  "case" Expression() ":"| "default" ":"{  default_ = true;}}void IfStatement() :/*
@@ -743,11 +743,9 @@ void CastLookahead() :{}{  LOOKAHEAD(2)  "(" PrimitiveType()| LOOKAHEAD("("
  * else's to the innermost if statement.  The LOOKAHEAD specification
  * is to tell JavaCC that we know what we are doing.
  */{  Token t;
-  Warning w;}{  "if" "(" Expression() ")"  { // check IF_MustUseBracket
-    t = getToken(1);    w = OtherCheckImplements.IF_MustUseBracket(this, t);    if (w != null) warnings.add(w);  }  Statement()  [    LOOKAHEAD(1)    t = "else"    { // check IF_NotAllowElse
-      w = OtherCheckImplements.IF_NotAllowElse(this, t);
-    	if (w != null) warnings.add(w);    }    { // check IF_MustUseBracket
-      t = getToken(1);      w = OtherCheckImplements.IF_MustUseBracket(this, t);      if (w != null) warnings.add(w);    }    Statement()  ]}void WhileStatement() :{}{  "while" "(" Expression() ")" Statement()}void DoStatement() :{}{  "do" Statement() "while" "(" Expression() ")" ";"}void ForStatement() :{}{  "for" "("  (    LOOKAHEAD(Modifiers() Type() < IDENTIFIER > ":")    Modifiers() Type() < IDENTIFIER > ":" Expression()  | [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]  )  ")" Statement()}void ForInit() :{}{  LOOKAHEAD(Modifiers() Type() < IDENTIFIER >)  LocalVariableDeclaration()| StatementExpressionList()}void StatementExpressionList() :{}{  StatementExpression()  (    "," StatementExpression()  )*}void ForUpdate() :{}{  StatementExpressionList()}void BreakStatement() :{}{  "break" [ < IDENTIFIER > ] ";"}void ContinueStatement() :{}{  "continue" [ < IDENTIFIER > ] ";"}void ReturnStatement() :{}{  "return" [ Expression() ] ";"}void ThrowStatement() :{}{  "throw" Expression() ";"}void SynchronizedStatement() :{}{  "synchronized" "(" Expression() ")" Block()}void TryStatement() :/*
+  Warning w;}{  "if" "(" Expression() ")"  { // check IF_MustUseBracket    w = OtherCheckImplements.IF_MustUseBracket(this);    if (w != null) warnings.add(w);  }  Statement()  [    LOOKAHEAD(1)    t = "else"    { // check IF_NotAllowElse
+      w = OtherCheckImplements.IF_NotAllowElse(this);
+    	if (w != null) warnings.add(w);    }    { // check IF_MustUseBracket      w = OtherCheckImplements.IF_MustUseBracket(this);      if (w != null) warnings.add(w);    }    Statement()  ]}void WhileStatement() :{}{  "while" "("  {    Warning w = OtherCheckImplements.WHILE_MustUseTrueConstantCondition(this);    if (w!=null) warnings.add(w);  }  Expression() ")" Statement()}void DoStatement() :{}{  "do" Statement() "while" "(" Expression() ")" ";"}void ForStatement() :{}{  "for" "("  (    LOOKAHEAD(Modifiers() Type() < IDENTIFIER > ":")    Modifiers() Type() < IDENTIFIER > ":" Expression()  | [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]  )  ")" Statement()}void ForInit() :{}{  LOOKAHEAD(Modifiers() Type() < IDENTIFIER >)  LocalVariableDeclaration()| StatementExpressionList()}void StatementExpressionList() :{}{  StatementExpression()  (    "," StatementExpression()  )*}void ForUpdate() :{}{  StatementExpressionList()}void BreakStatement() :{}{  "break" [ < IDENTIFIER > ] ";"}void ContinueStatement() :{}{  "continue" [ < IDENTIFIER > ] ";"}void ReturnStatement() :{}{  "return" [ Expression() ] ";"}void ThrowStatement() :{}{  "throw" Expression() ";"}void SynchronizedStatement() :{}{  "synchronized" "(" Expression() ")" Block()}void TryStatement() :/*
  * Semantic check required here to make sure that at least one
  * finally/catch is present.
  */{}{  "try" Block()  (    "catch" "(" FormalParameter() ")" Block()  )*  [ "finally" Block() ]}/* We use productions to match >>>, >> and > so that we can keep the

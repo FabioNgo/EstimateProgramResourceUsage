@@ -16,8 +16,6 @@ public enum RuleType {
 
 	FILE_MustHaveBlankLinesInEOF("File must have a blink line in the end"),
 
-	FILE_NotAllowGotoStatement("'goto' statement is not allowed"),
-
 	GENERAL_MustUseAnnotation("Annotation should be used here"),
 
 	COMMENT_MustHaveJavaDoc("Javadoc comment should be used here"),
@@ -25,9 +23,6 @@ public enum RuleType {
 	COMMENT_MustHaveBlockComment("Block comment should be used here"),
 
 	CLASS_MustHaveDefaultConstructor("Class '%w' must have default constructor"),
-
-	VARIABLE_NotAllowNameConflict(
-			"Name conflict is not allowed, variable '%w' should be renamed"),
 
 	WRAPLINE_NotAllowTooLongLine(
 			"This line's length is larger than %r, it should be shorted"),
@@ -40,7 +35,7 @@ public enum RuleType {
 	/*
 	 * This flag indicates at least one rules have this rule type
 	 */
-	private static boolean loaded = false;
+	private boolean loaded = false;
 	
 	public boolean isLoaded(){
 		return loaded;

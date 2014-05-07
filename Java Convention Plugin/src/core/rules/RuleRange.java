@@ -1,7 +1,7 @@
 package core.rules;
 
 /**
- * Defined Rule Range must be specified in RuleReader.jj too
+ * RuleRange is openable elements of java
  */
 public enum RuleRange {
 	FILE(0),
@@ -14,11 +14,7 @@ public enum RuleRange {
 
 	METHOD(2),
 
-	CONSTRUCTOR(2),
-
-	FIELD(2),
-
-	VARIABLE(3);
+	CONSTRUCTOR(2);
 
 	private final int level;
 
@@ -35,8 +31,6 @@ public enum RuleRange {
 	}
 
 	public boolean include(RuleRange rg) {
-		if (this == FIELD || this == VARIABLE)
-			return false;
 		if (this == INTERFACE && rg == CONSTRUCTOR)
 			return false;
 		if (this != rg && level == 2 && rg.level == 2)

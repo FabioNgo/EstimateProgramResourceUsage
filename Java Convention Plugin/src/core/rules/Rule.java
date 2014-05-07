@@ -30,6 +30,12 @@ public class Rule {
 	 */
 	final public RuleType type;
 
+	/**
+	 * Create a rule, if range is not specify, range = FILE
+	 * @param type
+	 * @param active
+	 * @param args
+	 */
 	public Rule(RuleType type, boolean active, Vector<String> args) {
 		this.type = type;
 		this.active = active;

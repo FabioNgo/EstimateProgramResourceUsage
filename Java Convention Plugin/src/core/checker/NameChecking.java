@@ -1,6 +1,16 @@
 package core.checker;
 
 public final class NameChecking {
+	public enum JavaElement {
+		COMPILATION_UNIT, PACKAGE,
+
+		CLASS, INTERFACE, ENUM,
+
+		METHOD, FIELD,
+
+		VARIABLE,
+	}
+
 	public static boolean isGoodClassName(String s) {
 		return s.compareTo(transformToGoodClassName(s)) == 0;
 	}

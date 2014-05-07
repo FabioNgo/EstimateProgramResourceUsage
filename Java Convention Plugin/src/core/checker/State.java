@@ -12,6 +12,7 @@ public final class State {
 	public String inEnum;
 	public String inMethod;
 	public String inConstructor;
+	public boolean hasDefaultConstructor;
 	public String inPackage;
 
 	/**
@@ -43,6 +44,8 @@ public final class State {
 		inInterface = null;
 		inEnum = null;
 		inMethod = null;
+		inConstructor = null;
+		hasDefaultConstructor = false; 
 		inPackage = null;
 	}
 }
