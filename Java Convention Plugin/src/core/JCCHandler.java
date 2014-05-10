@@ -71,8 +71,6 @@ public class JCCHandler {
 		commentChecker = new CommentChecker(stream);
 		indentChecker = new IndentChecker(stream);
 		otherChecker = new OtherChecker(stream);
-
-		otherChecker.rm = RulesManager.createRulesManager(rulesFile);
 	}
 
 	public Vector<Warning> check(InputStream is, int type) {
@@ -88,6 +86,7 @@ public class JCCHandler {
 			break;
 		case CHECK_TYPE_OTHER:
 			checker = otherChecker;
+			otherChecker.rm = RulesManager.createRulesManager(rulesFile);
 			break;
 		default:
 			return warnings;

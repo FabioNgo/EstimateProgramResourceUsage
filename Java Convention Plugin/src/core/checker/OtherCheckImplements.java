@@ -17,17 +17,18 @@ public class OtherCheckImplements {
 		Token t = c.getToken(1);
 		WarningOther warning = null;
 		for (RuleRange rg : RuleRange.values()) {
-			if (c.rm.isActive(RuleType.IF_MustUseBracket, rg)) {
-				if (!t.image.equals("{")) {
-					Rule r = c.rm.searchRule(RuleType.IF_MustUseBracket, rg);
-					if (!c.state.isInRange(rg))
-						break;
-					Position pos = new Position(t);
-					String s[] = new String[] { r.getMessage(null) };
-					warning = new WarningOther(pos, null, s);
-					return warning;
-				}
-			}
+			if (!c.rm.isActive(RuleType.IF_MustUseBracket, rg))
+				break;
+			if (t.image.equals("{"))
+				break;
+			if (!c.state.isInRange(rg))
+				break;
+
+			Rule r = c.rm.searchRule(RuleType.IF_MustUseBracket, rg);
+			Position pos = new Position(t);
+			String s[] = new String[] { r.getMessage(null) };
+			warning = new WarningOther(pos, null, s);
+			return warning;
 		}
 		return warning;
 	}
@@ -70,7 +71,7 @@ public class OtherCheckImplements {
 			if (c.rm.isActive(RuleType.SWITCH_MustHaveDefaultBranch, rg)) {
 				Rule r = c.rm.searchRule(RuleType.SWITCH_MustHaveDefaultBranch,
 						rg);
-				if (!c.state.isInRange(rg))
+				if (!c.state.isInRange(rg) || c.state.switchHasDefault)
 					break;
 				Position pos = new Position(t);
 				String s[] = new String[] { r.getMessage(null) };
@@ -141,6 +142,29 @@ public class OtherCheckImplements {
 					return warning;
 				}
 			}
+		}
+		return warning;
+	}
+
+	/**
+	 * Return a warning if there is a rule generates one
+	 */
+	public static Warning FOR_MustUseBracket(Checker c) {
+		Token t = c.getToken(1);
+		WarningOther warning = null;
+		for (RuleRange rg : RuleRange.values()) {
+			if (!c.rm.isActive(RuleType.FOR_MustUseBracket, rg))
+				break;
+			if (t.image.equals("{"))
+				break;
+			if (!c.state.isInRange(rg))
+				break;
+
+			Rule r = c.rm.searchRule(RuleType.FOR_MustUseBracket, rg);
+			Position pos = new Position(t);
+			String s[] = new String[] { r.getMessage(null) };
+			warning = new WarningOther(pos, null, s);
+			return warning;
 		}
 		return warning;
 	}

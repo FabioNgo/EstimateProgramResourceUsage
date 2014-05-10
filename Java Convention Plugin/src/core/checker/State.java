@@ -6,6 +6,7 @@ public final class State {
 	public boolean isFinal;
 	public boolean isField;
 	public boolean isInSwitch;
+	public boolean switchHasDefault;
 
 	public String inClass;
 	public String inInterface;
@@ -40,6 +41,8 @@ public final class State {
 		isFinal = false;
 		isField = false;
 		isInSwitch = false;
+		switchHasDefault = false;
+		
 		inClass = null;
 		inInterface = null;
 		inEnum = null;

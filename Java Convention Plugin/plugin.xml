@@ -38,20 +38,6 @@
          </view>
       </perspectiveExtension>
    </extension>
-   <extension 
-      point="org.eclipse.ui.views"> 
-   <view
-         allowMultiple="false"
-         category="Java Convention Plugin.category"
-         class="javaConvention.view.JCCMarkerView"
-         id="Java Convention Plugin.MarkerView"
-         name="JCC Marker"> 
-   </view>
-   <category
-         id="Java Convention Plugin.category"
-         name="JCC">
-   </category> 
-</extension>
    <extension
          point="org.eclipse.ui.ide.markerSupport">
       <markerContentGenerator

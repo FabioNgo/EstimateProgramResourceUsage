@@ -75,7 +75,14 @@ public class RulesReader implements RulesReaderConstants {
     }
     jj_consume_token(RPAREN);
     jj_consume_token(31);
-    Rule r = new Rule(RuleType.valueOf(name), active, args);
+    Rule r = null;
+    try
+    {
+      r = new Rule(RuleType.valueOf(name), active, args);
+    } catch (Exception e)
+    {
+
+    }
     {if (true) return r;}
     throw new Error("Missing return statement in function");
   }

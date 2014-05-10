@@ -6,6 +6,8 @@ public enum RuleType {
 	IF_NotAllowElse("'else' is not allow"),
 
 	IF_MustUseBracket("Brackets { } must be used in 'if' statement"),
+	
+	FOR_MustUseBracket("Brackets { } must be used in 'for' statement"),
 
 	SWITCH_MustHaveDefaultBranch("'switch' must have default branch"),
 
